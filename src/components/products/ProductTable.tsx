@@ -131,7 +131,6 @@ export function ProductTable({ products, selectedProducts, onSelectionChange }: 
               <Checkbox
                 checked={selectedProducts.length === products.length}
                 onCheckedChange={handleSelectAll}
-                indeterminate={selectedProducts.length > 0 && selectedProducts.length < products.length}
               />
             </TableHead>
             <TableHead>Product</TableHead>
