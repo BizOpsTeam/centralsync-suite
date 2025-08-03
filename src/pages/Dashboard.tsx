@@ -1,9 +1,57 @@
+import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Users, Package } from "lucide-react";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SalesChart } from "@/components/dashboard/SalesChart";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { dashboardService } from "@/api/dashboard";
+import { useToast } from "@/components/ui/use-toast";
+
+interface DashboardMetrics {
+  totalRevenue: number;
+  salesGrowth: number;
+  activeCustomers: number;
+  productsSold: number;
+}
 
 export default function Dashboard() {
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const loadMetrics = async () => {
+      try {
+        setLoading(true);
+        const data = await dashboardService.fetchDashboardMetrics();
+        setMetrics(data);
+      } catch (error) {
+        console.error('Failed to load dashboard metrics:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load dashboard metrics',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMetrics();
+  }, [toast]);
+
+  // Format values based on the data
+  const formatValue = (value: number | undefined, isCurrency = false, isPercent = false) => {
+    if (value === undefined) return '--';
+    if (isCurrency) return dashboardService.formatter.format(value);
+    if (isPercent) return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+    return dashboardService.formatNumber(value);
+  };
+
+  // Calculate change type based on value
+  const getChangeType = (value: number | undefined): 'positive' | 'negative' | 'neutral' => {
+    if (value === undefined) return 'neutral';
+    return value >= 0 ? 'positive' : 'negative';
+  };
   return (
     <div className="p-6 space-y-6">
       {/* Welcome Section */}
@@ -14,33 +62,37 @@ export default function Dashboard() {
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard
+<MetricCard
           title="Total Revenue"
-          value="$12,345"
-          change="+12.5%"
-          changeType="positive"
+          value={loading ? 'Loading...' : formatValue(metrics?.totalRevenue, true)}
+          change={formatValue(metrics?.salesGrowth, false, true)}
+          changeType={getChangeType(metrics?.salesGrowth)}
           icon={DollarSign}
+          loading={loading}
         />
         <MetricCard
           title="Sales Growth"
-          value="23.4%"
-          change="+4.2%"
-          changeType="positive"
+          value={loading ? '--' : formatValue(metrics?.salesGrowth, false, true)}
+          change={metrics ? 'vs. last period' : ''}
+          changeType={getChangeType(metrics?.salesGrowth)}
           icon={TrendingUp}
+          loading={loading}
         />
         <MetricCard
           title="Active Customers"
-          value="1,247"
-          change="+8.1%"
+          value={loading ? '--' : formatValue(metrics?.activeCustomers)}
+          change={metrics ? '+5.2% from last month' : ''}
           changeType="positive"
           icon={Users}
+          loading={loading}
         />
         <MetricCard
           title="Products Sold"
-          value="456"
-          change="-2.4%"
-          changeType="negative"
+          value={loading ? '--' : formatValue(metrics?.productsSold)}
+          change={metrics ? '12% increase' : ''}
+          changeType="positive"
           icon={Package}
+          loading={loading}
         />
       </div>
 
