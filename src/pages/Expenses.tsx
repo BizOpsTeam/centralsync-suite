@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExpenseList } from "@/components/expenses/ExpenseList";
-import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { ExpenseAnalytics } from "@/components/expenses/ExpenseAnalytics";
 import { BudgetTracker } from "@/components/expenses/BudgetTracker";
 

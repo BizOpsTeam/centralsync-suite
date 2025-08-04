@@ -42,7 +42,7 @@ export interface IDashBoardMetrics {
 }
 
 export type TCategory = {
-    id: string
+    id: string  
     name: string
     description: string
     createdAt: Date
