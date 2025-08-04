@@ -2,6 +2,50 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '@/api/dashboard';
 
+// Add axios interceptor for automatic token refresh
+let authContext: any = null;
+
+export const setAuthContext = (context: any) => {
+    authContext = context;
+};
+
+axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            
+            try {
+                // Try to refresh the token
+                const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, {
+                    withCredentials: true,
+                });
+                
+                // Update the token in the original request
+                const newToken = response.data.accessToken;
+                originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+                
+                // Update AuthContext state if available
+                if (authContext && authContext.setAccessToken) {
+                    authContext.setAccessToken(newToken);
+                }
+                
+                // Retry the original request
+                return axios(originalRequest);
+            } catch (refreshError) {
+                // If refresh fails, redirect to login
+                console.error('Token refresh failed:', refreshError);
+                // You might want to trigger a logout here
+                return Promise.reject(error);
+            }
+        }
+        
+        return Promise.reject(error);
+    }
+);
+
 interface User {
     id: string;
     email: string;
@@ -38,6 +82,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+    // Register this context with the axios interceptor
+    useEffect(() => {
+        setAuthContext({ setAccessToken, setUser });
+    }, []);
 
     // Auto refresh user token on mount and handle session persistence
     useEffect(() => {

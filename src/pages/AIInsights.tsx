@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     Card,
@@ -41,6 +41,7 @@ import {
 } from "@/api/ai";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
 const COLORS = {
     analysis: "bg-blue-100 text-blue-800",
@@ -62,6 +63,7 @@ export default function AIInsights() {
     const { toast } = useToast();
     const { accessToken } = useAuth();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState("dashboard");
     const [query, setQuery] = useState("");
@@ -71,31 +73,31 @@ export default function AIInsights() {
     // Queries
     const { data: dashboard, isLoading: dashboardLoading } = useQuery({
         queryKey: ["aiDashboard"],
-        queryFn: () => getAIDashboard(),
+        queryFn: () => getAIDashboard(accessToken || ""),
         enabled: !!accessToken,
     });
 
     const { data: insights, isLoading: insightsLoading } = useQuery({
         queryKey: ["aiInsights"],
-        queryFn: () => generateInsights(),
+        queryFn: () => generateInsights(accessToken || ""),
         enabled: !!accessToken,
     });
 
     const { data: predictions, isLoading: predictionsLoading } = useQuery({
         queryKey: ["aiPredictions"],
-        queryFn: () => predictTrends("30"),
+        queryFn: () => predictTrends(accessToken || "", "30"),
         enabled: !!accessToken,
     });
 
     const { data: recommendations, isLoading: recommendationsLoading } = useQuery({
         queryKey: ["aiRecommendations"],
-        queryFn: () => generateRecommendations(),
+        queryFn: () => generateRecommendations(accessToken || ""),
         enabled: !!accessToken,
     });
 
     // Mutations
     const analyzeQueryMutation = useMutation({
-        mutationFn: (query: string) => analyzeQuery(query),
+        mutationFn: (query: string) => analyzeQuery(query, accessToken || ""),
         onSuccess: (data) => {
             toast({
                 title: "Analysis Complete",
@@ -104,6 +106,7 @@ export default function AIInsights() {
             queryClient.invalidateQueries({ queryKey: ["aiDashboard"] });
         },
         onError: (error: any) => {
+            console.log(error);
             toast({
                 title: "Analysis Failed",
                 description: error.response?.data?.message || "Failed to analyze query",
@@ -164,10 +167,94 @@ export default function AIInsights() {
                     </div>
                     <CardTitle className="text-lg">{insight.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground mb-4">{insight.description}</p>
+                <CardContent className="space-y-4">
+                    <p className="text-muted-foreground">{insight.description}</p>
+                    
+                    {/* Key Metrics */}
+                    {insight.data?.keyMetrics && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Key Metrics</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                {Object.entries(insight.data.keyMetrics).map(([key, value]) => (
+                                    <div key={key} className="bg-muted p-2 rounded text-sm">
+                                        <span className="font-medium">{key}:</span> {String(value)}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Insights */}
+                    {insight.data?.insights && insight.data.insights.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Insights</h4>
+                            <ul className="space-y-1">
+                                {insight.data.insights.map((insight: string, index: number) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start">
+                                        <span className="text-primary mr-2">•</span>
+                                        {insight}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Recommendations */}
+                    {insight.data?.recommendations && insight.data.recommendations.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Recommendations</h4>
+                            <ul className="space-y-1">
+                                {insight.data.recommendations.map((recommendation: string, index: number) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start">
+                                        <span className="text-green-600 mr-2">→</span>
+                                        {recommendation}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Factors */}
+                    {insight.data?.factors && insight.data.factors.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Factors</h4>
+                            <ul className="space-y-1">
+                                {insight.data.factors.map((factor: string, index: number) => (
+                                    <li key={index} className="text-sm text-muted-foreground flex items-start">
+                                        <span className="text-blue-600 mr-2">•</span>
+                                        {factor}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Steps */}
+                    {insight.data?.steps && insight.data.steps.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Steps</h4>
+                            <ol className="space-y-1 list-decimal list-inside">
+                                {insight.data.steps.map((step: string, index: number) => (
+                                    <li key={index} className="text-sm text-muted-foreground">
+                                        {step}
+                                    </li>
+                                ))}
+                            </ol>
+                        </div>
+                    )}
+
+                    {/* Expected Outcome */}
+                    {insight.data?.expectedOutcome && (
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Expected Outcome</h4>
+                            <p className="text-sm text-muted-foreground bg-green-50 p-2 rounded">
+                                {insight.data.expectedOutcome}
+                            </p>
+                        </div>
+                    )}
+
                     {insight.actionable && (
-                        <div className="flex items-center space-x-2 text-sm text-green-600">
+                        <div className="flex items-center space-x-2 text-sm text-green-600 pt-2 border-t">
                             <CheckCircle className="w-4 h-4" />
                             <span>Actionable insight</span>
                         </div>
@@ -175,6 +262,22 @@ export default function AIInsights() {
                 </CardContent>
             </Card>
         );
+    };
+
+    const handleQuickAction = (action: string) => {
+        switch (action) {
+            case 'sales-report':
+                navigate('/reports');
+                break;
+            case 'customer-analysis':
+                navigate('/customers');
+                break;
+            case 'inventory-forecast':
+                navigate('/products');
+                break;
+            default:
+                break;
+        }
     };
 
     if (dashboardLoading) {
@@ -367,15 +470,30 @@ export default function AIInsights() {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2">
-                                    <Button variant="outline" size="sm" className="w-full justify-start">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="w-full justify-start"
+                                      onClick={() => handleQuickAction('sales-report')}
+                                    >
                                         <TrendingUp className="w-4 h-4 mr-2" />
                                         Generate Sales Report
                                     </Button>
-                                    <Button variant="outline" size="sm" className="w-full justify-start">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="w-full justify-start"
+                                      onClick={() => handleQuickAction('customer-analysis')}
+                                    >
                                         <Users className="w-4 h-4 mr-2" />
                                         Customer Analysis
                                     </Button>
-                                    <Button variant="outline" size="sm" className="w-full justify-start">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="w-full justify-start"
+                                      onClick={() => handleQuickAction('inventory-forecast')}
+                                    >
                                         <Package className="w-4 h-4 mr-2" />
                                         Inventory Forecast
                                     </Button>

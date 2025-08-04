@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, Users, Package, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { IDashBoardMetrics } from '@/types/Product';
 import { SalesChart } from '@/components/dashboard/SalesChart';
+import { useNavigate } from 'react-router-dom';
 
 const MetricCard = ({ 
   title, 
@@ -80,6 +81,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { accessToken } = useAuth();
+  const navigate = useNavigate();
 
   const loadMetrics = async () => {
     if (!accessToken) return;
@@ -123,6 +125,22 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'sale':
+        navigate('/sales');
+        break;
+      case 'invoice':
+        navigate('/invoices');
+        break;
+      case 'campaign':
+        navigate('/campaigns');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -278,7 +296,10 @@ export default function Dashboard() {
         <div className="bg-gradient-to-br from-primary to-primary/80 rounded-lg p-6 text-white">
           <h3 className="text-lg font-semibold mb-2">Process New Sale</h3>
           <p className="text-primary-foreground/80 mb-4">Quick checkout for walk-in customers</p>
-          <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+          <button 
+            onClick={() => handleQuickAction('sale')}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          >
             Start Sale →
           </button>
         </div>
@@ -286,7 +307,10 @@ export default function Dashboard() {
         <div className="bg-gradient-to-br from-success to-success/80 rounded-lg p-6 text-white">
           <h3 className="text-lg font-semibold mb-2">Create Invoice</h3>
           <p className="text-success-foreground/80 mb-4">Generate professional invoices</p>
-          <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+          <button 
+            onClick={() => handleQuickAction('invoice')}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          >
             New Invoice →
           </button>
         </div>
@@ -294,7 +318,10 @@ export default function Dashboard() {
         <div className="bg-gradient-to-br from-warning to-warning/80 rounded-lg p-6 text-white">
           <h3 className="text-lg font-semibold mb-2">Send Campaign</h3>
           <p className="text-warning-foreground/80 mb-4">Reach out to your customers</p>
-          <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+          <button 
+            onClick={() => handleQuickAction('campaign')}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          >
             Create Campaign →
           </button>
         </div>

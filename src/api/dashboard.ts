@@ -100,8 +100,8 @@ export const fetchDashboardMetrics = async (accessToken: string): Promise<IDashB
         timesSold: p.timesSold || 1
       })),
       salesOverTime: (salesOverTimeData.data?.data || []).map((item: any) => ({
-        date: item.date || new Date().toISOString().split('T')[0],
-        total: item.totalRevenue || 0
+        date: item.period || new Date().toISOString().split('T')[0],
+        total: item.totalAmount || 0
       }))
     };
   } catch (error) {

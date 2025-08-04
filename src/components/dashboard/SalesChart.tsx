@@ -10,8 +10,12 @@ interface SalesData {
 
 export function SalesChart({salesDataOverTime}: {salesDataOverTime: SalesData[]}) {
   
-  // Fallback data in case of loading or error
-  const chartData = salesDataOverTime.length === 0 ? salesDataOverTime : [];
+  // Use the actual data, not fallback to empty array
+  const chartData = salesDataOverTime || [];
+  
+  // Debug logging
+  console.log('SalesChart received data:', salesDataOverTime);
+  console.log('Chart data to render:', chartData);
 
   return (
     <Card className="col-span-2">
@@ -20,7 +24,7 @@ export function SalesChart({salesDataOverTime}: {salesDataOverTime: SalesData[]}
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
-          {salesDataOverTime.length === 0 ? (
+          {chartData.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
