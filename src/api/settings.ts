@@ -43,7 +43,7 @@ export interface ChangePasswordData {
 
 // API functions
 export const getUserProfile = async (accessToken: string) => {
-    const response = await axios.get(`${BASE_URL}/users/profile`, {
+    const response = await axios.get(`${BASE_URL}/auth/me`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
