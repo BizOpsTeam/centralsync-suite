@@ -176,7 +176,7 @@ export function AddExpenseDialog({ open, onOpenChange, onSuccess }: AddExpenseDi
     });
 
     // Fetch categories
-    const { data: categoriesData, refetch: refetchCategories } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ["expense-categories"],
         queryFn: () => getExpenseCategories(accessToken!),
         enabled: !!accessToken && open,
