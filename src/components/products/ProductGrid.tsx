@@ -10,23 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  cost: number;
-  stock: number;
-  lowStock: boolean;
-  category: string;
-  image: string;
-  status: string;
-  variants: Array<{ name: string; options: string[] }>;
-}
+import type { IProduct } from "@/types/Product";
 
 interface ProductGridProps {
-  products: Product[];
+  products: IProduct[];
   selectedProducts: string[];
   onSelectionChange: (selectedIds: string[]) => void;
 }
@@ -106,7 +93,7 @@ export function ProductGrid({ products, selectedProducts, onSelectionChange }: P
             {/* Product Image */}
             <div className="aspect-square bg-muted/50 rounded-lg mb-3 flex items-center justify-center">
               <img
-                src={product.image}
+                src={product.images[0].url}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-lg"
                 onError={(e) => {
@@ -121,7 +108,6 @@ export function ProductGrid({ products, selectedProducts, onSelectionChange }: P
                 <h3 className="font-medium text-sm text-foreground line-clamp-2" title={product.name}>
                   {product.name}
                 </h3>
-                <p className="text-xs text-muted-foreground">SKU: {product.sku}</p>
               </div>
 
               <div className="flex justify-between items-center">
@@ -131,29 +117,16 @@ export function ProductGrid({ products, selectedProducts, onSelectionChange }: P
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium">{product.stock} units</p>
-                  {getStockBadge(product.stock, product.lowStock)}
+                  {getStockBadge(product.stock, product.stock < 10)}
                 </div>
               </div>
 
               <div className="pt-2 border-t border-border">
                 <p className="text-xs text-muted-foreground mb-1">Category</p>
                 <Badge variant="outline" className="text-xs">
-                  {product.category}
+                  {product.category.name}
                 </Badge>
               </div>
-
-              {product.variants.length > 0 && (
-                <div className="pt-2">
-                  <p className="text-xs text-muted-foreground mb-1">Variants</p>
-                  <div className="flex flex-wrap gap-1">
-                    {product.variants.map((variant, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {variant.name}: {variant.options.length}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>

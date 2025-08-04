@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { fetchCustomers, type CustomerWithStats } from "@/api/customers";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from 'date-fns';
+import { AddCustomerDialog } from "@/components/customers/AddCustomerDialog";
 
 interface CustomerStatusBadgeProps {
   status: 'active' | 'inactive';
@@ -98,10 +99,7 @@ export default function Customers() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Customer
-          </Button>
+          <AddCustomerDialog onCustomerAdded={loadCustomers} />
         </div>
       </div>
 

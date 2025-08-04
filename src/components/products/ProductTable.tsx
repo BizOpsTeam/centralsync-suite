@@ -18,28 +18,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  cost: number;
-  stock: number;
-  lowStock: boolean;
-  category: string;
-  image: string;
-  status: string;
-  variants: Array<{ name: string; options: string[] }>;
-}
+import { type IProduct } from "@/types/Product";
 
 interface ProductTableProps {
-  products: Product[];
+  products: IProduct[];
   selectedProducts: string[];
   onSelectionChange: (selectedIds: string[]) => void;
 }
 
-type SortField = 'name' | 'sku' | 'price' | 'stock' | 'category';
+type SortableProductField = keyof Pick<IProduct, 'id' | 'name' | 'price' | 'stock' | 'cost'>;
+type SortField = SortableProductField | 'category';
 type SortDirection = 'asc' | 'desc';
 
 export function ProductTable({ products, selectedProducts, onSelectionChange }: ProductTableProps) {
@@ -135,13 +123,12 @@ export function ProductTable({ products, selectedProducts, onSelectionChange }: 
             </TableHead>
             <TableHead>Product</TableHead>
             <SortableHeader field="name">Name</SortableHeader>
-            <SortableHeader field="sku">SKU</SortableHeader>
             <SortableHeader field="category">Category</SortableHeader>
             <SortableHeader field="price">Price</SortableHeader>
             <TableHead>Cost</TableHead>
             <SortableHeader field="stock">Stock</SortableHeader>
-            <TableHead>Status</TableHead>
-            <TableHead>Variants</TableHead>
+            {/* <TableHead>Status</TableHead> */}
+            {/* <TableHead>Variants</TableHead> */}
             <TableHead className="w-12">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -157,7 +144,7 @@ export function ProductTable({ products, selectedProducts, onSelectionChange }: 
               <TableCell>
                 <div className="w-12 h-12 bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
                   <img
-                    src={product.image}
+                    src={product.images[0].url}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -172,36 +159,15 @@ export function ProductTable({ products, selectedProducts, onSelectionChange }: 
                 </div>
               </TableCell>
               <TableCell>
-                <code className="text-xs bg-muted px-2 py-1 rounded">{product.sku}</code>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline">{product.category}</Badge>
+                <Badge variant="outline">{product.category.name}</Badge>
               </TableCell>
               <TableCell className="font-medium">${product.price}</TableCell>
               <TableCell className="text-muted-foreground">${product.cost}</TableCell>
               <TableCell>
                 <div className="space-y-1">
                   <div className="font-medium">{product.stock} units</div>
-                  {getStockBadge(product.stock, product.lowStock)}
+                  {getStockBadge(product.stock, product.stock < 10)}
                 </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
-                  {product.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {product.variants.length > 0 ? (
-                  <div className="space-y-1">
-                    {product.variants.map((variant, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs mr-1">
-                        {variant.name}: {variant.options.length}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground text-sm">None</span>
-                )}
               </TableCell>
               <TableCell>
                 <DropdownMenu>

@@ -1,27 +1,108 @@
+import type { IDashBoardMetrics } from '@/types/Product';
 import axios from 'axios';
 
-interface DashboardMetrics {
-  totalRevenue: number;
-  salesGrowth: number;
-  activeCustomers: number;
-  productsSold: number;
-}
+export const BASE_URL = 'http://localhost:4000';
 
-export const fetchDashboardMetrics = async (): Promise<DashboardMetrics> => {
+export const fetchDashboardMetrics = async (accessToken: string): Promise<IDashBoardMetrics> => {
   try {
-    // We'll make parallel requests to get all metrics at once
-    const [revenueRes, salesRes, customersRes, productsRes] = await Promise.all([
-      axios.get('/api/analytics/revenue'),
-      axios.get('/api/analytics/sales-growth'),
-      axios.get('/api/customers/count'),
-      axios.get('/api/analytics/products-sold')
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': 'application/json',
+    };
+
+    // Make parallel requests to get all metrics at once
+    const [
+      revenueData,
+      salesTrendData,
+      customersData,
+      productsData,
+      topProductsData,
+      salesOverTimeData
+    ] = await Promise.all([
+      // Get total revenue from profit and loss
+      axios.get(`${BASE_URL}/analytics/profit-loss`, { 
+        headers 
+      }),
+      
+      // Get sales trend for growth calculation
+      axios.get(`${BASE_URL}/analytics/sales-over-time`, { 
+        params: { period: 'month' },
+        headers 
+      }),
+      
+      // Get active customers count
+      axios.get(`${BASE_URL}/analytics/top-customers`, { 
+        params: { limit: 1 },
+        headers 
+      }),
+      
+      // Get products count (this might need adjustment based on actual endpoint)
+      axios.get(`${BASE_URL}/analytics/top-products`, { 
+        params: { limit: 1 },
+        headers 
+      }),
+      
+      // Get top products
+      axios.get(`${BASE_URL}/analytics/top-products`, { 
+        params: { limit: 5 },
+        headers 
+      }),
+      
+      // Get sales over time for the chart
+      axios.get(`${BASE_URL}/analytics/sales-over-time`, { 
+        params: { period: 'month' },
+        headers 
+      })
     ]);
 
+    // Calculate sales growth from the last two periods
+    const salesData = salesTrendData.data?.data || [];
+    let salesGrowth = 0;
+    if (salesData.length >= 2) {
+      const currentPeriod = salesData[salesData.length - 1]?.total || 0;
+      const previousPeriod = salesData[salesData.length - 2]?.total || 0;
+      salesGrowth = previousPeriod ? ((currentPeriod - previousPeriod) / previousPeriod) * 100 : 0;
+    }
+
+    // Get total revenue from profit and loss data
+    const profitLossData = revenueData.data?.data || {};
+    const totalRevenue = profitLossData.revenue || 0;
+    console.log("profitLossData", profitLossData)
+    console.log("salesOverTimeData", salesOverTimeData)
+    
+    // Get active customers count (assuming top-customers returns an array)
+    const activeCustomers = Array.isArray(customersData.data?.data) ? 
+      customersData.data.data.length : 0;
+      
+    // Get products sold (this is an approximation - adjust based on actual data)
+    const productsSold = Array.isArray(productsData.data?.data) ? 
+      productsData.data.data.reduce((sum: number, p: any) => sum + (p.totalSold || 0), 0) : 0;
+
     return {
-      totalRevenue: revenueRes.data.data.totalRevenue || 0,
-      salesGrowth: salesRes.data.data.growthPercentage || 0,
-      activeCustomers: customersRes.data.data.count || 0,
-      productsSold: productsRes.data.data.count || 0
+      totalRevenue,
+      salesGrowth,
+      activeCustomers,
+      productsSold,
+      topProducts: (topProductsData.data?.data || []).map((p: any) => ({
+        product: {
+          id: p.productId || p.id || '',
+          name: p.name || 'Unknown Product',
+          price: p.price || 0,
+          // Add other required product fields with defaults
+          description: p.description || '',
+          sku: p.sku || '',
+          stock: p.stock || 0,
+          category: p.category || 'Uncategorized',
+          image: p.image || ''
+        },
+        totalSold: p.totalSold || p.quantity || 0,
+        totalRevenue: p.totalRevenue || (p.price || 0) * (p.quantity || 0),
+        timesSold: p.timesSold || 1
+      })),
+      salesOverTime: (salesOverTimeData.data?.data || []).map((item: any) => ({
+        date: item.date || new Date().toISOString().split('T')[0],
+        total: item.totalRevenue || 0
+      }))
     };
   } catch (error) {
     console.error('Error fetching dashboard metrics:', error);
@@ -30,7 +111,9 @@ export const fetchDashboardMetrics = async (): Promise<DashboardMetrics> => {
       totalRevenue: 0,
       salesGrowth: 0,
       activeCustomers: 0,
-      productsSold: 0
+      productsSold: 0,
+      topProducts: [],
+      salesOverTime: []
     };
   }
 };

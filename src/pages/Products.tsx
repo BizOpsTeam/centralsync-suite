@@ -1,107 +1,75 @@
 
-import { useState } from "react";
-import { Search, Plus, Filter, Download, Grid, List, Package } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, Plus, Download, Grid, List, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductTable } from "@/components/products/ProductTable";
 import { AddProductDialog } from "@/components/products/AddProductDialog";
-import { FilterSidebar } from "@/components/products/FilterSidebar";
+import { AddCategoryDialog } from "@/components/products/AddCategoryDialog";
 import { BulkActions } from "@/components/products/BulkActions";
+import { type IProduct } from "@/types/Product";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getProducts } from "@/api/products";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-hot-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const mockProducts = [
-  {
-    id: "1",
-    name: "Wireless Bluetooth Headphones",
-    sku: "WBH-001",
-    price: 89.99,
-    cost: 45.00,
-    stock: 25,
-    lowStock: false,
-    category: "Electronics",
-    image: "/placeholder.svg",
-    status: "active",
-    variants: [
-      { name: "Color", options: ["Black", "White", "Blue"] },
-      { name: "Size", options: ["Small", "Medium", "Large"] }
-    ]
-  },
-  {
-    id: "2",
-    name: "Organic Coffee Beans",
-    sku: "OCB-002",
-    price: 24.99,
-    cost: 12.00,
-    stock: 5,
-    lowStock: true,
-    category: "Food & Beverage",
-    image: "/placeholder.svg",
-    status: "active",
-    variants: []
-  },
-  {
-    id: "3",
-    name: "Cotton T-Shirt",
-    sku: "CTS-003",
-    price: 19.99,
-    cost: 8.50,
-    stock: 100,
-    lowStock: false,
-    category: "Clothing",
-    image: "/placeholder.svg",
-    status: "active",
-    variants: [
-      { name: "Size", options: ["XS", "S", "M", "L", "XL"] },
-      { name: "Color", options: ["White", "Black", "Gray", "Navy"] }
-    ]
-  },
-  {
-    id: "4",
-    name: "Desk Lamp",
-    sku: "DL-004",
-    price: 45.99,
-    cost: 22.00,
-    stock: 0,
-    lowStock: true,
-    category: "Home & Garden",
-    image: "/placeholder.svg",
-    status: "inactive",
-    variants: []
-  }
-];
 
 export default function Products() {
+  const { accessToken } = useAuth();
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showFilterSidebar, setShowFilterSidebar] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [filters, setFilters] = useState({
-    category: '',
-    status: '',
-    stockLevel: '',
+    category: "",
+    status: "",
+    stockStatus: "",
     priceRange: [0, 1000]
   });
+  const queryClient = useQueryClient();
+    // Get products 
+    const { data: products, isLoading: isLoadingProducts, error: productsError } = useQuery({
+      queryKey: ['products'],
+      queryFn: () => getProducts(accessToken!, searchQuery, selectedCategory, 1, 20),
+    });
 
-  const filteredProducts = mockProducts.filter(product => {
+    //revalidate search when any of the query params changes
+    useEffect(() => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    }, [searchQuery, selectedCategory, filters, ]);
+
+  const filteredProducts = products ? products?.filter((product: IProduct) => {
+    // Apply category filter if selected
+    if (selectedCategory && product.category.name !== selectedCategory) {
+      return false;
+    }
+    // Apply other filters here
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+                         product.description &&product.description.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = !filters.category || product.category === filters.category;
-    const matchesStatus = !filters.status || product.status === filters.status;
-    const matchesStockLevel = !filters.stockLevel || 
-      (filters.stockLevel === 'low' && product.lowStock) ||
-      (filters.stockLevel === 'inStock' && product.stock > 0) ||
-      (filters.stockLevel === 'outOfStock' && product.stock === 0);
+    const matchesCategory = !filters.category || product.category.name === filters.category;
+    const matchesStockLevel = !filters.stockStatus || 
+      (filters.stockStatus === 'low' && product.stock < 10) ||
+      (filters.stockStatus === 'inStock' && product.stock > 0) ||
+      (filters.stockStatus === 'outOfStock' && product.stock === 0);
     
-    return matchesSearch && matchesCategory && matchesStatus && matchesStockLevel;
-  });
+    return matchesSearch && matchesCategory && matchesStockLevel;
+  }): [];
 
-  const lowStockCount = mockProducts.filter(p => p.lowStock).length;
-  const outOfStockCount = mockProducts.filter(p => p.stock === 0).length;
-  const totalValue = mockProducts.reduce((sum, p) => sum + (p.stock * p.cost), 0);
+  const lowStockCount = filteredProducts.filter(p => p.stock < 10).length;
+  const outOfStockCount = filteredProducts.filter(p => p.stock === 0).length;
+  const totalValue = filteredProducts.reduce((sum, p) => sum + (p.stock * p.price), 0);
+
+  //toast error if there's any
+  useEffect(() => {
+    if (productsError) {
+      toast.error(productsError.message);
+    }
+  }, [productsError]);
 
   return (
     <div className="p-6 space-y-6">
@@ -125,7 +93,7 @@ export default function Products() {
               <Package className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Products</p>
-                <p className="text-2xl font-bold">{mockProducts.length}</p>
+                <p className="text-2xl font-bold">{products?.length}</p>
               </div>
             </div>
           </CardContent>
@@ -168,28 +136,34 @@ export default function Products() {
       {/* Controls Bar */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <div className="flex-1 w-full">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center space-x-2 flex-wrap gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search products by name or SKU..."
-                  className="pl-10"
-                  value={searchQuery}
+                  type="search"
+                  placeholder="Search products..."
+                  className="pl-8 w-[200px] lg:w-[300px]"
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
+              {/* <CategoryFilter 
+                value={selectedCategory} 
+                onValueChange={setSelectedCategory} 
+              /> */}
+              <AddCategoryDialog onCategoryAdded={() => setSelectedCategory("")} />
+              {/* <FilterSidebar filters={filters} onFilterChange={setFilters} /> */}
             </div>
             
             <div className="flex gap-2 items-center">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilterSidebar(!showFilterSidebar)}
               >
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
-              </Button>
+              </Button> */}
               
               <div className="flex border rounded-md">
                 <Button
@@ -232,7 +206,7 @@ export default function Products() {
       {/* Main Content */}
       <div className="flex gap-6">
         {/* Filter Sidebar */}
-        {showFilterSidebar && (
+        {/* {showFilterSidebar && (
           <div className="w-64 flex-shrink-0">
             <FilterSidebar
               filters={filters}
@@ -240,24 +214,29 @@ export default function Products() {
               productCount={filteredProducts.length}
             />
           </div>
-        )}
+        )} */}
 
         {/* Product Display */}
-        <div className="flex-1">
+
+        {isLoadingProducts ? (
+            <ProductTableSkeleton />
+        ) : (
+            <div className="flex-1">
           {viewMode === 'grid' ? (
             <ProductGrid
-              products={filteredProducts}
+              products={filteredProducts || []}
               selectedProducts={selectedProducts}
               onSelectionChange={setSelectedProducts}
             />
           ) : (
             <ProductTable
-              products={filteredProducts}
+              products={filteredProducts || []}
               selectedProducts={selectedProducts}
               onSelectionChange={setSelectedProducts}
             />
           )}
         </div>
+        )}
       </div>
 
       {/* Add Product Dialog */}
@@ -267,4 +246,16 @@ export default function Products() {
       />
     </div>
   );
+}
+
+
+
+const ProductTableSkeleton = () => {
+    return (
+        <div className="flex flex-col gap-4">
+            <Skeleton className="h-16 w-12" />
+            <Skeleton className="h-16 w-12" />
+            <Skeleton className="h-16 w-12" />
+        </div>
+    );
 }
