@@ -2,13 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PointOfSale } from "@/components/sales/PointOfSale";
+import { SalesList } from "@/components/sales/SalesList";
 import { InvoiceList } from "@/components/sales/InvoiceList";
 import { QuotesList } from "@/components/sales/QuotesList";
-import { Plus, Receipt, FileText, Calculator } from "lucide-react";
+import { NewSaleModal } from "@/components/sales/NewSaleModal";
+import { QuickSaleModal } from "@/components/sales/QuickSaleModal";
+import { Plus, Receipt, FileText, Calculator, Zap } from "lucide-react";
 
 export default function Sales() {
-  const [activeTab, setActiveTab] = useState("pos");
+  const [activeTab, setActiveTab] = useState("sales");
+  const [showNewSaleModal, setShowNewSaleModal] = useState(false);
+  const [showQuickSaleModal, setShowQuickSaleModal] = useState(false);
 
   return (
     <div className="p-6 space-y-6">
@@ -18,9 +22,13 @@ export default function Sales() {
           <p className="text-muted-foreground">Manage sales, invoices, and customer transactions</p>
         </div>
         <div className="flex gap-2">
-          <Button>
+          <Button onClick={() => setShowNewSaleModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
             New Sale
+          </Button>
+          <Button variant="outline" onClick={() => setShowQuickSaleModal(true)}>
+            <Zap className="h-4 w-4 mr-2" />
+            Quick Sale
           </Button>
           <Button variant="outline">
             <FileText className="h-4 w-4 mr-2" />
@@ -79,13 +87,13 @@ export default function Sales() {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="pos">Point of Sale</TabsTrigger>
+          <TabsTrigger value="sales">Sales</TabsTrigger>
           <TabsTrigger value="invoices">Invoices</TabsTrigger>
           <TabsTrigger value="quotes">Quotes</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="pos" className="space-y-4">
-          <PointOfSale />
+        <TabsContent value="sales" className="space-y-4">
+          <SalesList />
         </TabsContent>
         
         <TabsContent value="invoices" className="space-y-4">
@@ -96,6 +104,18 @@ export default function Sales() {
           <QuotesList />
         </TabsContent>
       </Tabs>
+
+      {/* New Sale Modal */}
+      <NewSaleModal 
+        open={showNewSaleModal} 
+        onOpenChange={setShowNewSaleModal} 
+      />
+
+      {/* Quick Sale Modal */}
+      <QuickSaleModal 
+        open={showQuickSaleModal} 
+        onOpenChange={setShowQuickSaleModal} 
+      />
     </div>
   );
 }
