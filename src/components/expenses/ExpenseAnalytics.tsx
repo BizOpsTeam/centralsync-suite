@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { DollarSign, TrendingUp, TrendingDown, Calendar, FileText, CreditCard } from "lucide-react";
 
 import { getExpenseAnalytics } from "@/api/expenses";
@@ -18,13 +18,6 @@ const monthlyData = [
     { name: "Apr", amount: 4600, count: 19 },
     { name: "May", amount: 6800, count: 28 },
     { name: "Jun", amount: 5400, count: 24 },
-];
-
-const weeklyTrend = [
-    { name: "Week 1", office: 320, travel: 450, software: 200 },
-    { name: "Week 2", office: 280, travel: 380, software: 180 },
-    { name: "Week 3", office: 420, travel: 620, software: 220 },
-    { name: "Week 4", office: 380, travel: 520, software: 190 },
 ];
 
 export function ExpenseAnalytics() {

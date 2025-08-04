@@ -2,27 +2,6 @@ import axios from 'axios';
 
 export const BASE_URL = 'http://localhost:4000';
 
-// Helper function to get auth token
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Helper function to make authenticated requests
-const fetchWithAuth = async (url: string, options: any = {}) => {
-  const token = getAuthToken();
-  const headers = {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/json',
-    ...options.headers,
-  };
-  
-  return axios({
-    ...options,
-    url: `${BASE_URL}${url}`,
-    headers,
-  });
-};
-
 // Types for reports
 export interface ProfitLossData {
   revenue: number;

@@ -45,26 +45,14 @@ import {
 } from "recharts";
 import {
     Download,
-    TrendingUp,
-    TrendingDown,
-    DollarSign,
-    Users,
-    Package,
-    ShoppingCart,
-    AlertTriangle,
-    Clock,
-    FileText,
-    BarChart3,
-    PieChart as PieChartIcon,
+
 } from "lucide-react";
 import {
     getProfitLoss,
     getRevenueForecast,
     getTopProducts,
-    getTopCustomers,
     getSalesOverTime,
     getSalesByChannel,
-    getSalesByPaymentMethod,
     getAverageOrderValue,
     getDiscountImpact,
     getStockouts,
@@ -72,7 +60,6 @@ import {
     getSalesForecast,
     getExpenseAnalytics,
     getBudgetAnalytics,
-    downloadPdf,
 } from "@/api/reports";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -489,7 +476,7 @@ export default function Reports() {
                                                 fill="#8884d8"
                                                 dataKey="totalAmount"
                                             >
-                                                {salesByChannel.map((entry, index) => (
+                                                {salesByChannel.map((_entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                 ))}
                                             </Pie>
