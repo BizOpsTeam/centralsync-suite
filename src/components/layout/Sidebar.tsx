@@ -11,7 +11,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Building,
-    FileText
+    FileText,
+    Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,8 @@ const navigation = [
     { name: "Sales", href: "/sales", icon: ShoppingCart },
     { name: "Campaigns", href: "/campaigns", icon: Megaphone },
     { name: "Expenses", href: "/expenses", icon: Receipt },
-    { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Reports", href: "/reports", icon: FileText },
+    { name: "AI Insights", href: "/ai", icon: Brain },
     { name: "Settings", href: "/settings", icon: Settings },
 ];
 
