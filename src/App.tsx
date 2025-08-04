@@ -13,6 +13,7 @@ import Sales from "./pages/Sales";
 import Campaigns from "./pages/Campaigns";
 import Expenses from "./pages/Expenses";
 import Analytics from "./pages/Analytics";
+import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -46,6 +47,7 @@ const AppRoutes = () => {
             <Route path="campaigns" element={<Campaigns />} />
             <Route path="expenses" element={<Expenses />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Route>

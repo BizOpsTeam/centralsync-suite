@@ -62,7 +62,7 @@ export function ExpenseAnalytics() {
 
     // Transform data for charts
     const categoryData = analytics.categoryBreakdown.map(item => ({
-        name: item.categoryId, // You might want to map this to actual category names
+        name: item.categoryId===""?"Other":item.categoryId, // You might want to map this to actual category names
         value: item._sum.amount,
         color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
     }));

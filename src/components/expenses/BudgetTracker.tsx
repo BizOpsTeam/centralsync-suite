@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,15 +39,58 @@ export function BudgetTracker() {
         queryKey: ["expense-categories"],
         queryFn: () => getExpenseCategories(accessToken!),
         enabled: !!accessToken,
-        onSuccess: (data) => {
-            setCategories(data.data);
-        },
     });
+
+    // Update categories when data is loaded
+    useEffect(() => {
+        if (categoriesResponse) {
+            setCategories(categoriesResponse.data);
+        }
+    }, [categoriesResponse]);
+
+    // Helper function to calculate budget period dates
+    const calculateBudgetDates = (period: BudgetPeriod) => {
+        const now = new Date();
+        let startDate: Date;
+        let endDate: Date;
+        
+        switch (period) {
+            case "MONTHLY":
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                break;
+            case "QUARTERLY":
+                const quarter = Math.floor(now.getMonth() / 3);
+                startDate = new Date(now.getFullYear(), quarter * 3, 1);
+                endDate = new Date(now.getFullYear(), (quarter + 1) * 3, 0);
+                break;
+            case "YEARLY":
+                startDate = new Date(now.getFullYear(), 0, 1);
+                endDate = new Date(now.getFullYear(), 11, 31);
+                break;
+            default:
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        }
+        
+        return {
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0]
+        };
+    };
 
     // Create budget mutation
     const createBudgetMutation = useMutation({
-        mutationFn: (data: { categoryId: string; allocated: number; period: BudgetPeriod }) => 
-            createBudget(accessToken!, data),
+        mutationFn: (data: { 
+            categoryId: string; 
+            allocated: number; 
+            period: BudgetPeriod;
+            startDate: string;
+            endDate: string;
+        }) => createBudget(accessToken!, {
+            ...data,
+            isActive: true
+        }),
         onSuccess: () => {
             toast.success("Budget created successfully!");
             queryClient.invalidateQueries({ queryKey: ["budget-analytics"] });
@@ -74,11 +117,11 @@ export function BudgetTracker() {
         }
     };
 
-    const getProgressColor = (percentage: number) => {
-        if (percentage >= 100) return "bg-red-500";
-        if (percentage >= 80) return "bg-yellow-500";
-        return "bg-green-500";
-    };
+    // const getProgressColor = (percentage: number) => {
+    //     if (percentage >= 100) return "bg-red-500";
+    //     if (percentage >= 80) return "bg-yellow-500";
+    //     return "bg-green-500";
+    // };
 
     const handleAddBudget = () => {
         if (!newBudget.categoryId || !newBudget.allocated) {
@@ -92,10 +135,12 @@ export function BudgetTracker() {
             return;
         }
 
+        const dates = calculateBudgetDates(newBudget.period);
         createBudgetMutation.mutate({
             categoryId: newBudget.categoryId,
-            allocated,
+            allocated: parseFloat(newBudget.allocated),
             period: newBudget.period,
+            ...dates
         });
     };
 
