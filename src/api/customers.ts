@@ -52,16 +52,21 @@ export const fetchCustomers = async (accessToken: string, page = 1, limit = 10, 
 
 export const createCustomer = async (accessToken: string, customerData: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>) => {
   try {
-    console.log("Creating customer...");
+    console.log("Creating customer with data:", customerData);
     const response = await axios.post(`${BASE_URL}/users/customers`, customerData, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
     });
-    console.log("response", await response.data);
+    console.log("Customer creation response:", response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating customer:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+    }
     throw error;
   }
 };

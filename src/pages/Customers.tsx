@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, Plus, Filter, Download, Loader2 } from "lucide-react";
+import { useDebounce } from '@/hooks/use-debounce';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,64 +27,108 @@ const CustomerStatusBadge = ({ status }: CustomerStatusBadgeProps) => (
 );
 
 export default function Customers() {
-  const [customers, setCustomers] = useState<CustomerWithStats[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
-    total: 0,
-    totalPages: 1,
   });
   const { toast } = useToast();
   const { accessToken } = useAuth();
+  const queryClient = useQueryClient();
 
-  const loadCustomers = async () => {
-    if (!accessToken) return;
-    try {
-      setLoading(true);
-      const data = await fetchCustomers(
-        accessToken,
-        pagination.page,
-        pagination.limit,
-        searchQuery
-      );
-      setCustomers(data.data);
-      setLoading(false);
-      setPagination(prev => ({
-        ...prev,
-        total: data.total,
-        totalPages: data.totalPages,
-      }));
-    } catch (error) {
-      console.error('Error loading customers:', error);
-      setLoading(false);
+  // Debounce search query to prevent excessive API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Query for fetching customers with caching
+  const {
+    data: customersData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['customers', pagination.page, pagination.limit, debouncedSearchQuery],
+    queryFn: () => fetchCustomers(
+      accessToken || '',
+      pagination.page,
+      pagination.limit,
+      debouncedSearchQuery
+    ),
+    enabled: !!accessToken,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (replaces cacheTime in v5)
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  });
+
+  // Mutation for adding a new customer
+  const addCustomerMutation = useMutation({
+    mutationFn: async (customerData: unknown) => {
+      // This would be implemented in the AddCustomerDialog component
+      // For now, we'll just invalidate the query
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      // Invalidate and refetch customers data
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      toast({
+        title: 'Success',
+        description: 'Customer added successfully',
+      });
+    },
+    onError: (error: unknown) => {
       toast({
         title: 'Error',
-        description: 'Failed to load customers. Please try again later.',
+        description: (error as any)?.response?.data?.message || 'Failed to add customer',
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
-  useEffect(() => {
-    if (!accessToken) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load customers. Please try again later. No accessToken',
-        variant: 'destructive',
-      });
-      return;
-    }
-    loadCustomers();
-  }, [pagination.page, searchQuery]);
-
-  const handleSearch = (e: React.FormEvent) => {
+  // Handle search form submission
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setPagination(prev => ({ ...prev, page: 1 }));
-  };
+  }, []);
+
+  // Handle pagination
+  const handlePageChange = useCallback((newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  }, []);
+
+  // Handle customer added callback
+  const handleCustomerAdded = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['customers'] });
+  }, [queryClient]);
+
+  // Handle search input change
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    // Reset to first page when searching
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, []);
+
+  // Error handling
+  if (isError) {
+    return (
+      <div className="p-6">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">
+            Failed to load customers. Please try again.
+          </p>
+          <Button onClick={() => refetch()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const customers: CustomerWithStats[] = customersData?.data || [];
+  const total: number = customersData?.total || 0;
+  const totalPages: number = customersData?.totalPages || 1;
 
   return (
     <div className="p-6 space-y-6">
@@ -91,7 +137,8 @@ export default function Customers() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Customers</h1>
           <p className="text-muted-foreground">
-            {loading ? 'Loading...' : `Showing ${customers.length} of ${pagination.total} customers`}
+            {isLoading ? 'Loading...' : `Showing ${customers.length} of ${total} customers`}
+            {searchQuery !== debouncedSearchQuery && ' (Searching...)'}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
@@ -99,7 +146,7 @@ export default function Customers() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <AddCustomerDialog onCustomerAdded={loadCustomers} />
+          <AddCustomerDialog onCustomerAdded={handleCustomerAdded} />
         </div>
       </div>
 
@@ -111,7 +158,7 @@ export default function Customers() {
             placeholder="Search by name, email, or phone..."
             className="pl-9 w-full"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
         <Button type="submit" variant="outline" className="w-full sm:w-auto">
@@ -127,37 +174,36 @@ export default function Customers() {
       {/* Customer List */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-medium">Customer Directory</CardTitle>
+          <CardTitle className="text-lg font-medium">
+            Customer Directory
+            {isFetching && !isLoading && (
+              <Loader2 className="inline ml-2 h-4 w-4 animate-spin text-primary" />
+            )}
+          </CardTitle>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination(prev => ({
-                ...prev,
-                page: Math.max(1, prev.page - 1)
-              }))}
-              disabled={pagination.page === 1 || loading}
+              onClick={() => handlePageChange(Math.max(1, pagination.page - 1))}
+              disabled={pagination.page === 1 || isLoading}
             >
               Previous
             </Button>
             <span className="text-sm text-muted-foreground">
-              Page {pagination.page} of {pagination.totalPages}
+              Page {pagination.page} of {totalPages}
             </span>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination(prev => ({
-                ...prev,
-                page: Math.min(pagination.totalPages, prev.page + 1)
-              }))}
-              disabled={pagination.page >= pagination.totalPages || loading}
+              onClick={() => handlePageChange(Math.min(totalPages, pagination.page + 1))}
+              disabled={pagination.page >= totalPages || isLoading}
             >
               Next
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          {loading && pagination.page === 1 ? (
+          {isLoading && pagination.page === 1 ? (
             <div className="flex justify-center items-center h-64">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
@@ -174,7 +220,7 @@ export default function Customers() {
                   <div className="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                        {customer.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        {customer.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -217,35 +263,29 @@ export default function Customers() {
             </div>
           )}
         </CardContent>
-        {pagination.totalPages > 1 && (
+        {totalPages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/20">
             <p className="text-sm text-muted-foreground">
               Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
               <span className="font-medium">
-                {Math.min(pagination.page * pagination.limit, pagination.total)}
+                {Math.min(pagination.page * pagination.limit, total)}
               </span>{' '}
-              of <span className="font-medium">{pagination.total}</span> customers
+              of <span className="font-medium">{total}</span> customers
             </p>
             <div className="flex space-x-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({
-                  ...prev,
-                  page: Math.max(1, prev.page - 1)
-                }))}
-                disabled={pagination.page === 1 || loading}
+                onClick={() => handlePageChange(Math.max(1, pagination.page - 1))}
+                disabled={pagination.page === 1 || isLoading}
               >
                 Previous
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({
-                  ...prev,
-                  page: Math.min(pagination.totalPages, prev.page + 1)
-                }))}
-                disabled={pagination.page >= pagination.totalPages || loading}
+                onClick={() => handlePageChange(Math.min(totalPages, pagination.page + 1))}
+                disabled={pagination.page >= totalPages || isLoading}
               >
                 Next
               </Button>

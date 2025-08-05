@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,9 +36,9 @@ type CustomerFormValues = z.infer<typeof customerFormSchema>;
 
 export function AddCustomerDialog({ onCustomerAdded }: { onCustomerAdded: () => void }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { accessToken } = useAuth();
+  const queryClient = useQueryClient();
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
@@ -49,27 +50,25 @@ export function AddCustomerDialog({ onCustomerAdded }: { onCustomerAdded: () => 
     },
   });
 
-  async function onSubmit(data: CustomerFormValues) {
-    if (!accessToken) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to add a customer.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setLoading(true);
-      // Create a new object with only the required fields and default values for optional ones
+  // Mutation for creating a customer
+  const createCustomerMutation = useMutation({
+    mutationFn: async (data: CustomerFormValues) => {
+      if (!accessToken) {
+        throw new Error("You must be logged in to add a customer.");
+      }
+      
       const customerData = {
         name: data.name,
         email: data.email,
-        phone: data.phone || '',
-        address: data.address || ''
+        phone: data.phone || undefined,
+        address: data.address || undefined
       };
-      await createCustomer(accessToken, customerData);
       
+      console.log("Sending customer data to API:", customerData);
+      
+      return await createCustomer(accessToken, customerData);
+    },
+    onSuccess: () => {
       toast({
         title: "Success",
         description: "Customer added successfully.",
@@ -79,18 +78,38 @@ export function AddCustomerDialog({ onCustomerAdded }: { onCustomerAdded: () => 
       setOpen(false);
       form.reset();
       
-      // Notify parent component to refresh the customers list
+      // Invalidate and refetch customers data
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      
+      // Notify parent component
       onCustomerAdded();
-    } catch (error) {
+    },
+    onError: (error: unknown) => {
       console.error("Error creating customer:", error);
+      
+      let errorMessage = "Failed to add customer. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null) {
+        const axiosError = error as any;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError.message) {
+          errorMessage = axiosError.message;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to add customer. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  async function onSubmit(data: CustomerFormValues) {
+    createCustomerMutation.mutate(data);
   }
 
   return (
@@ -179,12 +198,12 @@ export function AddCustomerDialog({ onCustomerAdded }: { onCustomerAdded: () => 
               type="button" 
               variant="outline" 
               onClick={() => setOpen(false)}
-              disabled={loading}
+              disabled={createCustomerMutation.isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? (
+            <Button type="submit" disabled={createCustomerMutation.isPending}>
+              {createCustomerMutation.isPending ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
