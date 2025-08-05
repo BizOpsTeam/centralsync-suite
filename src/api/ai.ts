@@ -13,6 +13,8 @@ export interface AIInsight {
     timestamp: Date;
     actionable: boolean;
     category: 'sales' | 'customers' | 'inventory' | 'financial' | 'general';
+    content?: string; // Add content field for AI responses
+    markdown?: string; // Add markdown field
 }
 
 export interface AIQuery {
