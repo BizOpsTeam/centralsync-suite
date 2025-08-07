@@ -671,23 +671,24 @@ export default function AIInsights() {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-4 p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Insights</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AI Insights</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Leverage AI to gain deeper business intelligence and make data-driven decisions
           </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
+            size="sm"
             onClick={() => queryClient.invalidateQueries({ queryKey: ["aiDashboard"] })}
             disabled={dashboardLoading}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
       </div>
@@ -695,11 +696,11 @@ export default function AIInsights() {
       {/* Natural Language Query */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-lg sm:text-xl">
             <Brain className="w-5 h-5" />
             <span>Ask AI About Your Business</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Ask questions in natural language and get AI-powered insights
           </CardDescription>
         </CardHeader>
@@ -717,11 +718,11 @@ export default function AIInsights() {
                 maxLength={500}
               />
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <Button
                 type="submit"
                 disabled={!query.trim() || isAnalyzing}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 w-full sm:w-auto"
               >
                 {isAnalyzing ? (
                   <>
@@ -735,7 +736,7 @@ export default function AIInsights() {
                   </>
                 )}
               </Button>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground text-center sm:text-right">
                 {query.length}/500 characters
               </div>
             </div>
@@ -778,20 +779,20 @@ export default function AIInsights() {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
-          <TabsTrigger value="predictions">Predictions</TabsTrigger>
-          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+          <TabsTrigger value="dashboard" className="text-xs sm:text-sm">Dashboard</TabsTrigger>
+          <TabsTrigger value="insights" className="text-xs sm:text-sm">Insights</TabsTrigger>
+          <TabsTrigger value="predictions" className="text-xs sm:text-sm">Predictions</TabsTrigger>
+          <TabsTrigger value="recommendations" className="text-xs sm:text-sm">Recommendations</TabsTrigger>
         </TabsList>
 
         {/* AI Dashboard */}
         <TabsContent value="dashboard" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Key Metrics */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
                   <Target className="w-5 h-5" />
                   <span>AI Confidence</span>
                 </CardTitle>
@@ -817,7 +818,7 @@ export default function AIInsights() {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
                   <Clock className="w-5 h-5" />
                   <span>Recent Analysis</span>
                 </CardTitle>
@@ -843,7 +844,7 @@ export default function AIInsights() {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
                   <Zap className="w-5 h-5" />
                   <span>Quick Actions</span>
                 </CardTitle>
@@ -853,7 +854,7 @@ export default function AIInsights() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => handleQuickAction('sales-report')}
                   >
                     <TrendingUp className="w-4 h-4 mr-2" />
@@ -862,7 +863,7 @@ export default function AIInsights() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => handleQuickAction('customer-analysis')}
                   >
                     <Users className="w-4 h-4 mr-2" />
@@ -871,7 +872,7 @@ export default function AIInsights() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-xs sm:text-sm"
                     onClick={() => handleQuickAction('inventory-forecast')}
                   >
                     <Package className="w-4 h-4 mr-2" />
@@ -883,57 +884,57 @@ export default function AIInsights() {
           </div>
 
           {/* AI Insights Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Top Insights */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <h3 className="text-base sm:text-lg font-semibold flex items-center space-x-2">
                 <Lightbulb className="w-5 h-5" />
                 <span>Top Insights</span>
               </h3>
-                          <div className="space-y-4">
-              {dashboard?.insights?.slice(0, 3).map((insight) => (
-                <InsightCard key={insight.id} insight={insight as ExtendedAIInsight} />
-              )) || (
-                <p className="text-muted-foreground text-sm">No insights available</p>
-              )}
-            </div>
+              <div className="space-y-4">
+                {dashboard?.insights?.slice(0, 3).map((insight) => (
+                  <InsightCard key={insight.id} insight={insight as ExtendedAIInsight} />
+                )) || (
+                  <p className="text-muted-foreground text-sm">No insights available</p>
+                )}
+              </div>
             </div>
 
             {/* Predictions */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <h3 className="text-base sm:text-lg font-semibold flex items-center space-x-2">
                 <TrendingUp className="w-5 h-5" />
                 <span>Predictions</span>
               </h3>
-                          <div className="space-y-4">
-              {dashboard?.predictions?.slice(0, 2).map((prediction) => (
-                <InsightCard key={prediction.id} insight={prediction as ExtendedAIInsight} />
-              )) || (
-                <p className="text-muted-foreground text-sm">No predictions available</p>
-              )}
-            </div>
+              <div className="space-y-4">
+                {dashboard?.predictions?.slice(0, 2).map((prediction) => (
+                  <InsightCard key={prediction.id} insight={prediction as ExtendedAIInsight} />
+                )) || (
+                  <p className="text-muted-foreground text-sm">No predictions available</p>
+                )}
+              </div>
             </div>
 
             {/* Recommendations */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <h3 className="text-base sm:text-lg font-semibold flex items-center space-x-2">
                 <Target className="w-5 h-5" />
                 <span>Recommendations</span>
               </h3>
-                          <div className="space-y-4">
-              {dashboard?.recommendations?.slice(0, 3).map((recommendation) => (
-                <InsightCard key={recommendation.id} insight={recommendation as ExtendedAIInsight} />
-              )) || (
-                <p className="text-muted-foreground text-sm">No recommendations available</p>
-              )}
-            </div>
+              <div className="space-y-4">
+                {dashboard?.recommendations?.slice(0, 3).map((recommendation) => (
+                  <InsightCard key={recommendation.id} insight={recommendation as ExtendedAIInsight} />
+                )) || (
+                  <p className="text-muted-foreground text-sm">No recommendations available</p>
+                )}
+              </div>
             </div>
           </div>
         </TabsContent>
 
         {/* Insights Tab */}
         <TabsContent value="insights" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {insightsLoading ? (
               <div className="col-span-full text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -953,7 +954,7 @@ export default function AIInsights() {
 
         {/* Predictions Tab */}
         <TabsContent value="predictions" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {predictionsLoading ? (
               <div className="col-span-full text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -973,7 +974,7 @@ export default function AIInsights() {
 
         {/* Recommendations Tab */}
         <TabsContent value="recommendations" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {recommendationsLoading ? (
               <div className="col-span-full text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>

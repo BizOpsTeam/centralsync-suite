@@ -171,18 +171,18 @@ export default function Reports() {
     };
 
     return (
-        <div className="space-y-6 p-4">
-            <div className="flex items-center justify-between">
+        <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Reports & Analytics</h1>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Comprehensive financial statements and business reports
                     </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Button variant="outline" onClick={() => handleDownloadReport("All")}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadReport("All")}>
                         <Download className="mr-2 h-4 w-4" />
-                        Export All
+                        <span className="hidden sm:inline">Export All</span>
                     </Button>
                 </div>
             </div>
@@ -190,13 +190,13 @@ export default function Reports() {
             {/* Filters */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Report Filters</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-base sm:text-lg">Report Filters</CardTitle>
+                    <CardDescription className="text-sm">
                         Customize the date range and period for your reports
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="startDate">Start Date</Label>
                             <Input
@@ -219,7 +219,7 @@ export default function Reports() {
                                 }
                             />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 sm:col-span-2 lg:col-span-1">
                             <Label htmlFor="period">Period</Label>
                             <Select value={period} onValueChange={setPeriod}>
                                 <SelectTrigger>
@@ -238,11 +238,11 @@ export default function Reports() {
             </Card>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="financial">Financial</TabsTrigger>
-                    <TabsTrigger value="sales">Sales</TabsTrigger>
-                    <TabsTrigger value="inventory">Inventory</TabsTrigger>
-                    <TabsTrigger value="expenses">Expenses</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+                    <TabsTrigger value="financial" className="text-xs sm:text-sm">Financial</TabsTrigger>
+                    <TabsTrigger value="sales" className="text-xs sm:text-sm">Sales</TabsTrigger>
+                    <TabsTrigger value="inventory" className="text-xs sm:text-sm">Inventory</TabsTrigger>
+                    <TabsTrigger value="expenses" className="text-xs sm:text-sm">Expenses</TabsTrigger>
                 </TabsList>
 
                 {/* Financial Reports */}
@@ -250,10 +250,10 @@ export default function Reports() {
                     {/* Profit & Loss Statement */}
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <CardTitle>Profit & Loss Statement</CardTitle>
-                                    <CardDescription>
+                                    <CardTitle className="text-base sm:text-lg">Profit & Loss Statement</CardTitle>
+                                    <CardDescription className="text-sm">
                                         {format(new Date(dateRange.startDate), "MMM dd, yyyy")} -{" "}
                                         {format(new Date(dateRange.endDate), "MMM dd, yyyy")}
                                     </CardDescription>
@@ -273,34 +273,34 @@ export default function Reports() {
                                 <div className="text-center py-8">Loading...</div>
                             ) : profitLoss ? (
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                         <div className="text-center">
-                                            <div className="text-2xl font-bold text-green-600">
+                                            <div className="text-xl sm:text-2xl font-bold text-green-600">
                                                 {formatCurrency(profitLoss.revenue)}
                                             </div>
-                                            <div className="text-sm text-muted-foreground">Revenue</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Revenue</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-2xl font-bold text-red-600">
+                                            <div className="text-xl sm:text-2xl font-bold text-red-600">
                                                 {formatCurrency(profitLoss.cogs)}
                                             </div>
-                                            <div className="text-sm text-muted-foreground">Cost of Goods</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Cost of Goods</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-2xl font-bold text-blue-600">
+                                            <div className="text-xl sm:text-2xl font-bold text-blue-600">
                                                 {formatCurrency(profitLoss.grossProfit)}
                                             </div>
-                                            <div className="text-sm text-muted-foreground">Gross Profit</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Gross Profit</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-2xl font-bold text-orange-600">
+                                            <div className="text-xl sm:text-2xl font-bold text-orange-600">
                                                 {formatCurrency(profitLoss.netProfit)}
                                             </div>
-                                            <div className="text-sm text-muted-foreground">Net Profit</div>
+                                            <div className="text-xs sm:text-sm text-muted-foreground">Net Profit</div>
                                         </div>
                                     </div>
                                     <Separator />
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                                         <div>Total Sales: {profitLoss?.breakdown?.salesCount || 0}</div>
                                         <div>Total Items: {profitLoss?.breakdown?.saleItemsCount || 0}</div>
                                         <div>Total Expenses: {profitLoss?.breakdown?.expenseCount || 0}</div>
@@ -317,10 +317,10 @@ export default function Reports() {
                     {/* Revenue Forecast */}
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <CardTitle>Revenue Forecast</CardTitle>
-                                    <CardDescription>Projected revenue for the next 3 periods</CardDescription>
+                                    <CardTitle className="text-base sm:text-lg">Revenue Forecast</CardTitle>
+                                    <CardDescription className="text-sm">Projected revenue for the next 3 periods</CardDescription>
                                 </div>
                                 <Button
                                     variant="outline"
@@ -336,7 +336,7 @@ export default function Reports() {
                             {forecastLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : revenueForecast ? (
-                                <div className="h-80">
+                                <div className="h-64 sm:h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={[...(revenueForecast.history || []), ...(revenueForecast.forecast || [])]}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -375,10 +375,10 @@ export default function Reports() {
                     {/* Sales Over Time */}
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <CardTitle>Sales Over Time</CardTitle>
-                                    <CardDescription>Sales performance over the selected period</CardDescription>
+                                    <CardTitle className="text-base sm:text-lg">Sales Over Time</CardTitle>
+                                    <CardDescription className="text-sm">Sales performance over the selected period</CardDescription>
                                 </div>
                                 <Button
                                     variant="outline"
@@ -394,7 +394,7 @@ export default function Reports() {
                             {salesLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : salesOverTime ? (
-                                <div className="h-80">
+                                <div className="h-64 sm:h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={salesOverTime}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -416,33 +416,35 @@ export default function Reports() {
                     {/* Top Products */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Top Products</CardTitle>
-                            <CardDescription>Best performing products by sales volume</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Top Products</CardTitle>
+                            <CardDescription className="text-sm">Best performing products by sales volume</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {productsLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : topProducts ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Product</TableHead>
-                                            <TableHead>Units Sold</TableHead>
-                                            <TableHead>Revenue</TableHead>
-                                            <TableHead>Times Sold</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {topProducts.map((product) => (
-                                            <TableRow key={product.productId}>
-                                                <TableCell className="font-medium">{product.name}</TableCell>
-                                                <TableCell>{product.totalSold}</TableCell>
-                                                <TableCell>{formatCurrency(product.totalRevenue)}</TableCell>
-                                                <TableCell>{product.timesSold}</TableCell>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Product</TableHead>
+                                                <TableHead>Units Sold</TableHead>
+                                                <TableHead>Revenue</TableHead>
+                                                <TableHead>Times Sold</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {topProducts.map((product) => (
+                                                <TableRow key={product.productId}>
+                                                    <TableCell className="font-medium">{product.name}</TableCell>
+                                                    <TableCell>{product.totalSold}</TableCell>
+                                                    <TableCell>{formatCurrency(product.totalRevenue)}</TableCell>
+                                                    <TableCell>{product.timesSold}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
                                     No product data available
@@ -454,14 +456,14 @@ export default function Reports() {
                     {/* Sales by Channel */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Sales by Channel</CardTitle>
-                            <CardDescription>Revenue breakdown by sales channel</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Sales by Channel</CardTitle>
+                            <CardDescription className="text-sm">Revenue breakdown by sales channel</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {channelLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : salesByChannel ? (
-                                <div className="h-80">
+                                <div className="h-64 sm:h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
@@ -495,17 +497,17 @@ export default function Reports() {
                     {/* Average Order Value */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Order Analytics</CardTitle>
-                            <CardDescription>Average order value and discount impact</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Order Analytics</CardTitle>
+                            <CardDescription className="text-sm">Average order value and discount impact</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {orderLoading ? (
                                     <div className="text-center py-8">Loading...</div>
                                 ) : averageOrder ? (
                                     <div className="space-y-4">
                                         <div className="text-center">
-                                            <div className="text-3xl font-bold text-green-600">
+                                            <div className="text-2xl sm:text-3xl font-bold text-green-600">
                                                 {formatCurrency(averageOrder.averageOrderValue)}
                                             </div>
                                             <div className="text-sm text-muted-foreground">Average Order Value</div>
@@ -530,7 +532,7 @@ export default function Reports() {
                                 ) : discountImpact ? (
                                     <div className="space-y-4">
                                         <div className="text-center">
-                                            <div className="text-3xl font-bold text-orange-600">
+                                            <div className="text-2xl sm:text-3xl font-bold text-orange-600">
                                                 {formatCurrency(discountImpact.totalDiscount)}
                                             </div>
                                             <div className="text-sm text-muted-foreground">Total Discounts</div>
@@ -561,37 +563,39 @@ export default function Reports() {
                     {/* Stockouts */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Stockout Alerts</CardTitle>
-                            <CardDescription>Products currently out of stock</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Stockout Alerts</CardTitle>
+                            <CardDescription className="text-sm">Products currently out of stock</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {stockoutsLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : stockouts && stockouts.length > 0 ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Product</TableHead>
-                                            <TableHead>Last Sold</TableHead>
-                                            <TableHead>Total Sold</TableHead>
-                                            <TableHead>Estimated Lost Sales</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {stockouts.map((item) => (
-                                            <TableRow key={item.productId}>
-                                                <TableCell className="font-medium">{item.name}</TableCell>
-                                                <TableCell>
-                                                    {item.lastSold
-                                                        ? format(new Date(item.lastSold), "MMM dd, yyyy")
-                                                        : "Never"}
-                                                </TableCell>
-                                                <TableCell>{item.totalSold}</TableCell>
-                                                <TableCell>{formatCurrency(item.estimatedLostSales)}</TableCell>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Product</TableHead>
+                                                <TableHead>Last Sold</TableHead>
+                                                <TableHead>Total Sold</TableHead>
+                                                <TableHead>Estimated Lost Sales</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {stockouts.map((item) => (
+                                                <TableRow key={item.productId}>
+                                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                                    <TableCell>
+                                                        {item.lastSold
+                                                            ? format(new Date(item.lastSold), "MMM dd, yyyy")
+                                                            : "Never"}
+                                                    </TableCell>
+                                                    <TableCell>{item.totalSold}</TableCell>
+                                                    <TableCell>{formatCurrency(item.estimatedLostSales)}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
                                     No stockout alerts
@@ -603,35 +607,37 @@ export default function Reports() {
                     {/* Slow Moving Inventory */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Slow Moving Inventory</CardTitle>
-                            <CardDescription>Products with low sales velocity</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Slow Moving Inventory</CardTitle>
+                            <CardDescription className="text-sm">Products with low sales velocity</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {slowMovingLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : slowMoving && slowMoving.length > 0 ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Product</TableHead>
-                                            <TableHead>Current Stock</TableHead>
-                                            <TableHead>Units Sold</TableHead>
-                                            <TableHead>Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {slowMoving.map((item) => (
-                                            <TableRow key={item.productId}>
-                                                <TableCell className="font-medium">{item.name}</TableCell>
-                                                <TableCell>{item.stock}</TableCell>
-                                                <TableCell>{item.totalSold}</TableCell>
-                                                <TableCell>
-                                                    <Badge variant="secondary">Slow Moving</Badge>
-                                                </TableCell>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Product</TableHead>
+                                                <TableHead>Current Stock</TableHead>
+                                                <TableHead>Units Sold</TableHead>
+                                                <TableHead>Status</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {slowMoving.map((item) => (
+                                                <TableRow key={item.productId}>
+                                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                                    <TableCell>{item.stock}</TableCell>
+                                                    <TableCell>{item.totalSold}</TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="secondary">Slow Moving</Badge>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
                                     No slow moving inventory
@@ -643,14 +649,14 @@ export default function Reports() {
                     {/* Sales Forecast */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Sales Forecast</CardTitle>
-                            <CardDescription>Projected sales for the next 3 periods</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Sales Forecast</CardTitle>
+                            <CardDescription className="text-sm">Projected sales for the next 3 periods</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {forecastSalesLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : salesForecast ? (
-                                <div className="h-80">
+                                <div className="h-64 sm:h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={salesForecast}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -675,37 +681,37 @@ export default function Reports() {
                     {/* Expense Analytics */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Expense Overview</CardTitle>
-                            <CardDescription>Expense summary and breakdown</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Expense Overview</CardTitle>
+                            <CardDescription className="text-sm">Expense summary and breakdown</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {expenseLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : expenseAnalytics ? (
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-red-600">
+                                        <div className="text-xl sm:text-2xl font-bold text-red-600">
                                             {formatCurrency(expenseAnalytics.totalAmount)}
                                         </div>
-                                        <div className="text-sm text-muted-foreground">Total Expenses</div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">Total Expenses</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">
+                                        <div className="text-xl sm:text-2xl font-bold text-blue-600">
                                             {expenseAnalytics.totalCount}
                                         </div>
-                                        <div className="text-sm text-muted-foreground">Total Transactions</div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">Total Transactions</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-600">
+                                        <div className="text-xl sm:text-2xl font-bold text-green-600">
                                             {expenseAnalytics.approvedCount}
                                         </div>
-                                        <div className="text-sm text-muted-foreground">Approved</div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">Approved</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-orange-600">
+                                        <div className="text-xl sm:text-2xl font-bold text-orange-600">
                                             {expenseAnalytics.pendingCount}
                                         </div>
-                                        <div className="text-sm text-muted-foreground">Pending</div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">Pending</div>
                                     </div>
                                 </div>
                             ) : (
@@ -719,49 +725,51 @@ export default function Reports() {
                     {/* Budget Analytics */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Budget Tracking</CardTitle>
-                            <CardDescription>Budget utilization and performance</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Budget Tracking</CardTitle>
+                            <CardDescription className="text-sm">Budget utilization and performance</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {budgetLoading ? (
                                 <div className="text-center py-8">Loading...</div>
                             ) : budgetAnalytics && budgetAnalytics.length > 0 ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Category</TableHead>
-                                            <TableHead>Allocated</TableHead>
-                                            <TableHead>Spent</TableHead>
-                                            <TableHead>Utilization</TableHead>
-                                            <TableHead>Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {budgetAnalytics.map((budget) => (
-                                            <TableRow key={budget.id}>
-                                                <TableCell className="font-medium">
-                                                    {budget.category?.name || "Unknown"}
-                                                </TableCell>
-                                                <TableCell>{formatCurrency(budget.allocated)}</TableCell>
-                                                <TableCell>{formatCurrency(budget.spent)}</TableCell>
-                                                <TableCell>{budget.utilization.toFixed(1)}%</TableCell>
-                                                <TableCell>
-                                                    <Badge
-                                                        variant={
-                                                            budget.status === "exceeded"
-                                                                ? "destructive"
-                                                                : budget.status === "warning"
-                                                                    ? "secondary"
-                                                                    : "default"
-                                                        }
-                                                    >
-                                                        {budget.status}
-                                                    </Badge>
-                                                </TableCell>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Category</TableHead>
+                                                <TableHead>Allocated</TableHead>
+                                                <TableHead>Spent</TableHead>
+                                                <TableHead>Utilization</TableHead>
+                                                <TableHead>Status</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {budgetAnalytics.map((budget) => (
+                                                <TableRow key={budget.id}>
+                                                    <TableCell className="font-medium">
+                                                        {budget.category?.name || "Unknown"}
+                                                    </TableCell>
+                                                    <TableCell>{formatCurrency(budget.allocated)}</TableCell>
+                                                    <TableCell>{formatCurrency(budget.spent)}</TableCell>
+                                                    <TableCell>{budget.utilization.toFixed(1)}%</TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant={
+                                                                budget.status === "exceeded"
+                                                                    ? "destructive"
+                                                                    : budget.status === "warning"
+                                                                        ? "secondary"
+                                                                        : "default"
+                                                            }
+                                                        >
+                                                            {budget.status}
+                                                        </Badge>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             ) : (
                                 <div className="text-center py-8 text-muted-foreground">
                                     No budget data available

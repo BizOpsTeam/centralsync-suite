@@ -216,37 +216,38 @@ export default function Settings() {
     }
 
   return (
-        <div className="space-y-6 p-4">
-            <div className="flex items-center justify-between">
+        <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h1>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Manage your business information and preferences
                     </p>
                 </div>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="business">Business</TabsTrigger>
-                    <TabsTrigger value="invoicing">Invoicing</TabsTrigger>
-                    <TabsTrigger value="security">Security</TabsTrigger>
-                    <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+                    <TabsTrigger value="business" className="text-xs sm:text-sm">Business</TabsTrigger>
+                    <TabsTrigger value="invoicing" className="text-xs sm:text-sm">Invoicing</TabsTrigger>
+                    <TabsTrigger value="security" className="text-xs sm:text-sm">Security</TabsTrigger>
+                    <TabsTrigger value="notifications" className="text-xs sm:text-sm">Notifications</TabsTrigger>
                 </TabsList>
 
                 {/* Business Information */}
                 <TabsContent value="business" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <CardTitle>Business Profile</CardTitle>
-                                    <CardDescription>
+                                    <CardTitle className="text-base sm:text-lg">Business Profile</CardTitle>
+                                    <CardDescription className="text-sm">
                                         Update your company information and branding
                                     </CardDescription>
                                 </div>
                                 <Button
                                     variant={isEditing ? "outline" : "default"}
+                                    size="sm"
                                     onClick={() => setIsEditing(!isEditing)}
                                 >
                                     {isEditing ? "Cancel" : "Edit"}
@@ -258,7 +259,7 @@ export default function Settings() {
                                 {/* Company Logo */}
                                 <div className="space-y-4">
                                     <Label>Company Logo</Label>
-                                    <div className="flex items-center space-x-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                                         <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
                                             {logoPreview || profile?.logoUrl ? (
                                                 <img
@@ -270,7 +271,7 @@ export default function Settings() {
                                                 <Upload className="w-8 h-8 text-gray-400" />
                                             )}
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 flex-1">
                                             <Input
                                                 type="file"
                                                 accept="image/*"
@@ -278,7 +279,7 @@ export default function Settings() {
                                                 disabled={!isEditing}
                                             />
                                             {selectedLogo && (
-                                                <div className="flex space-x-2">
+                                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                                                     <Button
                                                         type="button"
                                                         size="sm"
@@ -307,7 +308,7 @@ export default function Settings() {
                                 <Separator />
 
                                 {/* Company Information */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="name">Company Name</Label>
                                         <Input
@@ -346,10 +347,11 @@ export default function Settings() {
                                 </div>
 
                                 {isEditing && (
-                                    <div className="flex space-x-2">
+                                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                                         <Button
                                             type="submit"
                                             disabled={updateProfileMutation.isPending}
+                                            className="w-full sm:w-auto"
                                         >
                                             {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                                         </Button>
@@ -357,6 +359,7 @@ export default function Settings() {
                                             type="button"
                                             variant="outline"
                                             onClick={() => setIsEditing(false)}
+                                            className="w-full sm:w-auto"
                                         >
                                             Cancel
                                         </Button>
@@ -371,15 +374,15 @@ export default function Settings() {
                 <TabsContent value="invoicing" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Invoice Settings</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Invoice Settings</CardTitle>
+                            <CardDescription className="text-sm">
                                 Configure invoice numbering, currency, and tax settings
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleProfileSubmit} className="space-y-6">
                                 {/* Currency Settings */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="currency">Default Currency</Label>
                                         <Select
@@ -432,7 +435,7 @@ export default function Settings() {
                                 {/* Invoice Numbering */}
                                 <div className="space-y-4">
                                     <Label>Invoice Numbering</Label>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="invoicePrefix">Prefix</Label>
                                             <Input
@@ -455,7 +458,7 @@ export default function Settings() {
                                                 }
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 sm:col-span-2 lg:col-span-1">
                                             <Label htmlFor="sequenceStart">Start Number</Label>
                                             <Input
                                                 id="sequenceStart"
@@ -477,6 +480,7 @@ export default function Settings() {
                                     <Button
                                         type="submit"
                                         disabled={updateProfileMutation.isPending}
+                                        className="w-full sm:w-auto"
                                     >
                                         {updateProfileMutation.isPending ? "Saving..." : "Save Settings"}
                                     </Button>
@@ -490,22 +494,22 @@ export default function Settings() {
                 <TabsContent value="security" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Account Security</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Account Security</CardTitle>
+                            <CardDescription className="text-sm">
                                 Manage your password and account security
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {/* Email Verification */}
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <Label>Email Verification</Label>
                                         <p className="text-sm text-muted-foreground">
                                             {profile?.email}
                                         </p>
                                     </div>
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                                         {profile?.isEmailVerified ? (
                                             <Badge variant="default" className="bg-green-100 text-green-800">
                                                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -618,6 +622,7 @@ export default function Settings() {
                                     <Button
                                         type="submit"
                                         disabled={changePasswordMutation.isPending}
+                                        className="w-full sm:w-auto"
                                     >
                                         {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
                                     </Button>
@@ -631,14 +636,14 @@ export default function Settings() {
                 <TabsContent value="notifications" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Notification Preferences</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-base sm:text-lg">Notification Preferences</CardTitle>
+                            <CardDescription className="text-sm">
                                 Configure your email and notification settings
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <Label>Email Notifications</Label>
                                         <p className="text-sm text-muted-foreground">
@@ -652,7 +657,7 @@ export default function Settings() {
                             <Separator />
 
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <Label>Invoice Alerts</Label>
                                         <p className="text-sm text-muted-foreground">
@@ -666,7 +671,7 @@ export default function Settings() {
                             <Separator />
 
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
                                         <Label>Stock Alerts</Label>
                                         <p className="text-sm text-muted-foreground">

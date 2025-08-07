@@ -72,28 +72,28 @@ export default function Products() {
     }, [productsError]);
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Product Catalog</h1>
-                    <p className="text-muted-foreground">Manage your inventory and product information</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Product Catalog</h1>
+                    <p className="text-sm sm:text-base text-muted-foreground">Manage your inventory and product information</p>
                 </div>
-                <Button onClick={() => setShowAddDialog(true)} className="bg-primary hover:bg-primary/90">
+                <Button onClick={() => setShowAddDialog(true)} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Product
                 </Button>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center space-x-2">
                             <Package className="h-5 w-5 text-primary" />
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Products</p>
-                                <p className="text-2xl font-bold">{products?.length}</p>
+                                <p className="text-xl sm:text-2xl font-bold">{products?.length}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -105,7 +105,7 @@ export default function Products() {
                             <div className="h-5 w-5 bg-warning rounded-full" />
                             <div>
                                 <p className="text-sm text-muted-foreground">Low Stock</p>
-                                <p className="text-2xl font-bold text-warning">{lowStockCount}</p>
+                                <p className="text-xl sm:text-2xl font-bold text-warning">{lowStockCount}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -117,17 +117,17 @@ export default function Products() {
                             <div className="h-5 w-5 bg-destructive rounded-full" />
                             <div>
                                 <p className="text-sm text-muted-foreground">Out of Stock</p>
-                                <p className="text-2xl font-bold text-destructive">{outOfStockCount}</p>
+                                <p className="text-xl sm:text-2xl font-bold text-destructive">{outOfStockCount}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="sm:col-span-2 lg:col-span-1">
                     <CardContent className="p-4">
                         <div>
                             <p className="text-sm text-muted-foreground">Inventory Value</p>
-                            <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
+                            <p className="text-xl sm:text-2xl font-bold">${totalValue.toFixed(2)}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -137,13 +137,13 @@ export default function Products() {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                        <div className="flex items-center space-x-2 flex-wrap gap-2">
-                            <div className="relative">
+                        <div className="flex items-center space-x-2 flex-wrap gap-2 w-full sm:w-auto">
+                            <div className="relative flex-1 sm:flex-none">
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     type="search"
                                     placeholder="Search products..."
-                                    className="pl-8 w-[200px] lg:w-[300px]"
+                                    className="pl-8 w-full sm:w-[200px] lg:w-[300px]"
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
@@ -155,7 +155,7 @@ export default function Products() {
                             {/* <FilterSidebar filters={filters} onFilterChange={setFilters} /> */}
                         </div>
 
-                        <div className="flex gap-2 items-center">
+                        <div className="flex gap-2 items-center w-full sm:w-auto">
                             {/* <Button
                 variant="outline"
                 size="sm"
@@ -186,7 +186,7 @@ export default function Products() {
 
                             <Button variant="outline" size="sm">
                                 <Download className="h-4 w-4 mr-2" />
-                                Export
+                                <span className="hidden sm:inline">Export</span>
                             </Button>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ export function PlaceholderPage({ title, description, features }: PlaceholderPag
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex items-center space-x-4">
         <Button 
           variant="ghost" 
@@ -27,32 +27,32 @@ export function PlaceholderPage({ title, description, features }: PlaceholderPag
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">{title}</h1>
-          <p className="text-xl text-muted-foreground">{description}</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-4">{title}</h1>
+          <p className="text-base sm:text-xl text-muted-foreground">{description}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Coming Soon Features</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Coming Soon Features</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3 p-4 bg-muted/50 rounded-lg">
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-foreground">{feature}</span>
+                  <span className="text-sm sm:text-base text-foreground">{feature}</span>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
 
-        <div className="text-center mt-8">
-          <p className="text-muted-foreground mb-4">
+        <div className="text-center mt-6 sm:mt-8">
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             This feature is currently under development. Check back soon!
           </p>
-          <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary/90">
+          <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
             Return to Dashboard
           </Button>
         </div>

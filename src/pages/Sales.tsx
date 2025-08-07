@@ -15,22 +15,22 @@ export default function Sales() {
   const [showQuickSaleModal, setShowQuickSaleModal] = useState(false);
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Sales & Invoicing</h1>
-          <p className="text-muted-foreground">Manage sales, invoices, and customer transactions</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Sales & Invoicing</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage sales, invoices, and customer transactions</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowNewSaleModal(true)}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button onClick={() => setShowNewSaleModal(true)} size="sm" className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             New Sale
           </Button>
-          <Button variant="outline" onClick={() => setShowQuickSaleModal(true)}>
+          <Button variant="outline" onClick={() => setShowQuickSaleModal(true)} size="sm" className="w-full sm:w-auto">
             <Zap className="h-4 w-4 mr-2" />
             Quick Sale
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto">
             <FileText className="h-4 w-4 mr-2" />
             New Invoice
           </Button>
@@ -38,14 +38,14 @@ export default function Sales() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Today's Sales</CardTitle>
             <Receipt className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$2,350</div>
+            <div className="text-xl sm:text-2xl font-bold">$2,350</div>
             <p className="text-xs text-muted-foreground">+12% from yesterday</p>
           </CardContent>
         </Card>
@@ -56,7 +56,7 @@ export default function Sales() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">23</div>
+            <div className="text-xl sm:text-2xl font-bold">23</div>
             <p className="text-xs text-muted-foreground">$8,450 total</p>
           </CardContent>
         </Card>
@@ -67,18 +67,18 @@ export default function Sales() {
             <Calculator className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            <div className="text-xl sm:text-2xl font-bold">8</div>
             <p className="text-xs text-muted-foreground">$15,250 potential</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="sm:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">This Month</CardTitle>
             <Receipt className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231</div>
+            <div className="text-xl sm:text-2xl font-bold">$45,231</div>
             <p className="text-xs text-muted-foreground">+20% from last month</p>
           </CardContent>
         </Card>
@@ -86,10 +86,10 @@ export default function Sales() {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="sales">Sales</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
-          <TabsTrigger value="quotes">Quotes</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="sales" className="text-xs sm:text-sm">Sales</TabsTrigger>
+          <TabsTrigger value="invoices" className="text-xs sm:text-sm">Invoices</TabsTrigger>
+          <TabsTrigger value="quotes" className="text-xs sm:text-sm">Quotes</TabsTrigger>
         </TabsList>
         
         <TabsContent value="sales" className="space-y-4">

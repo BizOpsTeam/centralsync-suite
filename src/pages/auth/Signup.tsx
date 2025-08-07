@@ -47,8 +47,8 @@ export const Signup = () => {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl sm:text-2xl font-bold">Create an account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your information to create an account
           </CardDescription>
         </CardHeader>
@@ -117,7 +117,7 @@ export const Signup = () => {
             </Button>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-center">
               Already have an account?{' '}
               <Link to="/login" className="font-medium text-primary hover:underline">
                 Sign in

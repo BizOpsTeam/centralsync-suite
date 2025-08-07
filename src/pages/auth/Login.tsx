@@ -44,8 +44,8 @@ export const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl sm:text-2xl font-bold">Welcome back</CardTitle>
+          <CardDescription className="text-sm">
             Enter your email and password to sign in to your account
           </CardDescription>
         </CardHeader>
@@ -64,7 +64,7 @@ export const Login = () => {
               />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
                   Forgot password?
@@ -85,7 +85,7 @@ export const Login = () => {
             </Button>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-center">
               Don't have an account?{' '}
               <Link to="/signup" className="font-medium text-primary hover:underline">
                 Sign up

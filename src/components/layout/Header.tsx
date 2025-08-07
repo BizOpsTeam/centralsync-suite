@@ -1,17 +1,31 @@
-import { Bell, Search, Plus } from "lucide-react";
+import { Bell, Search, Plus, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
 
-export function Header() {
+interface HeaderProps {
+  onMobileMenuClick: () => void;
+}
+
+export function Header({ onMobileMenuClick }: HeaderProps) {
   const { user } = useAuth();
 
   return (
-    <header className="bg-white border-b border-border px-6 py-4">
+    <header className="bg-white border-b border-border px-4 sm:px-6 py-4">
       <div className="flex items-center justify-between">
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onMobileMenuClick}
+          className="lg:hidden h-8 w-8 p-0"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+
         {/* Search */}
-        <div className="flex-1 max-w-xl">
+        <div className="flex-1 max-w-xl mx-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -23,8 +37,8 @@ export function Header() {
 
         {/* Actions */}
         {user ? (
-          <div className="flex items-center space-x-4">
-            <Button size="sm" className="bg-primary hover:bg-primary/90">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <Button size="sm" className="bg-primary hover:bg-primary/90 hidden sm:flex">
               <Plus className="h-4 w-4 mr-2" />
               Quick Sale
             </Button>

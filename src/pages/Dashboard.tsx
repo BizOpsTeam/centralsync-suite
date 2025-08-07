@@ -143,11 +143,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
+    <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Overview of your business performance
           </p>
         </div>
@@ -164,7 +164,7 @@ export default function Dashboard() {
       </div>
       
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics" disabled>
             Analytics
@@ -173,7 +173,7 @@ export default function Dashboard() {
         
         <TabsContent value="overview" className="space-y-4">
           {/* Stats Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               title="Total Revenue"
               value={formatValue(metrics.totalRevenue, true)}
@@ -206,11 +206,11 @@ export default function Dashboard() {
               loading={loading}
             />
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
             <SalesChart salesDataOverTime={metrics.salesOverTime}/>
             <Card>
               <CardHeader>
-                <CardTitle>Top Products</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Top Products</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -254,7 +254,7 @@ export default function Dashboard() {
           
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground text-center py-4">
@@ -267,7 +267,7 @@ export default function Dashboard() {
         <TabsContent value="analytics" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Sales Analytics</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Sales Analytics</CardTitle>
             </CardHeader>
             <CardContent className="h-[400px] flex items-center justify-center">
               <p className="text-muted-foreground">Analytics view coming soon</p>
@@ -278,7 +278,7 @@ export default function Dashboard() {
         <TabsContent value="reports" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Reports</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Reports</CardTitle>
             </CardHeader>
             <CardContent className="h-[400px] flex items-center justify-center">
               <p className="text-muted-foreground">Reports view coming soon</p>
@@ -292,35 +292,35 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-lg p-6 text-white">
-          <h3 className="text-lg font-semibold mb-2">Process New Sale</h3>
-          <p className="text-primary-foreground/80 mb-4">Quick checkout for walk-in customers</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-lg p-4 sm:p-6 text-white">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Process New Sale</h3>
+          <p className="text-primary-foreground/80 mb-4 text-sm">Quick checkout for walk-in customers</p>
           <button 
             onClick={() => handleQuickAction('sale')}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
           >
             Start Sale →
           </button>
         </div>
         
-        <div className="bg-gradient-to-br from-success to-success/80 rounded-lg p-6 text-white">
-          <h3 className="text-lg font-semibold mb-2">Create Invoice</h3>
-          <p className="text-success-foreground/80 mb-4">Generate professional invoices</p>
+        <div className="bg-gradient-to-br from-success to-success/80 rounded-lg p-4 sm:p-6 text-white">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Create Invoice</h3>
+          <p className="text-success-foreground/80 mb-4 text-sm">Generate professional invoices</p>
           <button 
             onClick={() => handleQuickAction('invoice')}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
           >
             New Invoice →
           </button>
         </div>
         
-        <div className="bg-gradient-to-br from-warning to-warning/80 rounded-lg p-6 text-white">
-          <h3 className="text-lg font-semibold mb-2">Send Campaign</h3>
-          <p className="text-warning-foreground/80 mb-4">Reach out to your customers</p>
+        <div className="bg-gradient-to-br from-warning to-warning/80 rounded-lg p-4 sm:p-6 text-white sm:col-span-2 lg:col-span-1">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Send Campaign</h3>
+          <p className="text-warning-foreground/80 mb-4 text-sm">Reach out to your customers</p>
           <button 
             onClick={() => handleQuickAction('campaign')}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
           >
             Create Campaign →
           </button>
