@@ -6,8 +6,10 @@ import React, {
     useCallback,
     useEffect
 } from 'react';
-import axios, { AxiosError } from 'axios';
-import { BASE_URL } from '@/api/dashboard';
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
+
 
 // ===== Types =====
 interface User {

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { BASE_URL } from "@/api/dashboard";
+
 import {
     Dialog,
     DialogContent,
@@ -56,6 +56,8 @@ interface AddProductDialogProps {
     onOpenChange: (open: boolean) => void;
     onProductAdded?: () => void;
 }
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export function AddProductDialog({
     open,
