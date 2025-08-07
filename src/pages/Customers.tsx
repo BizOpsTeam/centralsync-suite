@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Plus, Filter, Download, Loader2 } from "lucide-react";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Search, Filter, Download, Loader2 } from "lucide-react";
 import { useDebounce } from '@/hooks/use-debounce';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
 import { fetchCustomers, type CustomerWithStats } from "@/api/customers";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from 'date-fns';
@@ -32,7 +31,6 @@ export default function Customers() {
     page: 1,
     limit: 10,
   });
-  const { toast } = useToast();
   const { accessToken } = useAuth();
   const queryClient = useQueryClient();
 
@@ -44,7 +42,6 @@ export default function Customers() {
     data: customersData,
     isLoading,
     isError,
-    error,
     refetch,
     isFetching
   } = useQuery({
@@ -63,29 +60,7 @@ export default function Customers() {
     retry: 2,
   });
 
-  // Mutation for adding a new customer
-  const addCustomerMutation = useMutation({
-    mutationFn: async (customerData: unknown) => {
-      // This would be implemented in the AddCustomerDialog component
-      // For now, we'll just invalidate the query
-      return Promise.resolve();
-    },
-    onSuccess: () => {
-      // Invalidate and refetch customers data
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-      toast({
-        title: 'Success',
-        description: 'Customer added successfully',
-      });
-    },
-    onError: (error: unknown) => {
-      toast({
-        title: 'Error',
-        description: (error as any)?.response?.data?.message || 'Failed to add customer',
-        variant: 'destructive',
-      });
-    },
-  });
+
 
   // Handle search form submission
   const handleSearch = useCallback((e: React.FormEvent) => {
