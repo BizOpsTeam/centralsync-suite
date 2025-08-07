@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { DollarSign, Users, Package, TrendingUp } from "lucide-react";
+import React from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { DollarSign, Users, Package, TrendingUp, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,7 +8,6 @@ import { fetchDashboardMetrics } from "@/api/dashboard";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { IDashBoardMetrics } from '@/types/Product';
 import { SalesChart } from '@/components/dashboard/SalesChart';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ const MetricCard = ({
         {loading ? (
           <Skeleton className="h-8 w-24" />
         ) : (
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="text-xl sm:text-2xl font-bold">{value}</div>
         )}
         {change && (
           <p className={`text-xs ${changeColor} mt-1`}>
@@ -77,54 +77,62 @@ const formatValue = (value: number | undefined, isCurrency = false, isPercent = 
 };
 
 export default function Dashboard() {
-  const [metrics, setMetrics] = useState<IDashBoardMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { accessToken } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const loadMetrics = async () => {
-    if (!accessToken) return;
-    
-    try {
-      setLoading(true);
-      const data = await fetchDashboardMetrics(accessToken);
-      console.log("data", data)
-      setMetrics(data);
-    } catch (error) {
+  // Optimized query with proper caching
+  const {
+    data: metrics,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['dashboard', 'metrics'],
+    queryFn: () => fetchDashboardMetrics(accessToken!),
+    enabled: !!accessToken,
+    staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache for 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch on component mount if data is fresh
+    retry: 2, // Retry failed requests 2 times
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+  });
+
+  // Handle error state
+  React.useEffect(() => {
+    if (isError && error) {
       console.error('Failed to load dashboard metrics:', error);
       toast({
         title: 'Error',
         description: 'Failed to load dashboard metrics. Please try again later.',
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [isError, error, toast]);
 
-  // Refresh data every 5 minutes
-  useEffect(() => {
-    loadMetrics();
-    
+  // Auto-refresh data every 5 minutes when component is mounted
+  React.useEffect(() => {
+    if (!accessToken) return;
+
     const interval = setInterval(() => {
-      loadMetrics();
+      // Only refetch if the data is stale
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'metrics'] });
     }, 5 * 60 * 1000); // 5 minutes
-    
+
     return () => clearInterval(interval);
-  }, [accessToken]);
-  
-  // Loading state
-  if (loading || !metrics) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="text-gray-600">Loading dashboard data...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [accessToken, queryClient]);
+
+  const handleRefresh = () => {
+    refetch();
+    toast({
+      title: 'Refreshing',
+      description: 'Dashboard data is being refreshed...',
+    });
+  };
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -142,6 +150,107 @@ export default function Dashboard() {
     }
   };
 
+  // Loading state with better UX
+  if (isLoading && !metrics) {
+    return (
+      <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Overview of your business performance
+            </p>
+          </div>
+        </div>
+        
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" disabled>
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-4">
+            {/* Stats Grid Skeleton */}
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {Array(4).fill(0).map((_, i) => (
+                <Card key={i}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-4" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-3 w-16 mt-1" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-64 w-full" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32" />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {Array(5).fill(0).map((_, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Skeleton className="h-10 w-10 rounded-md" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-3 w-16" />
+                          </div>
+                        </div>
+                        <Skeleton className="h-4 w-12" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError && !metrics) {
+    return (
+      <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Overview of your business performance
+            </p>
+          </div>
+        </div>
+        
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">
+            Failed to load dashboard data. Please try again.
+          </p>
+          <Button onClick={handleRefresh} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
@@ -155,10 +264,20 @@ export default function Dashboard() {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={loadMetrics}
-            disabled={loading}
+            onClick={handleRefresh}
+            disabled={isFetching}
           >
-            {loading ? 'Refreshing...' : 'Refresh Data'}
+            {isFetching ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh Data
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -176,45 +295,45 @@ export default function Dashboard() {
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               title="Total Revenue"
-              value={formatValue(metrics.totalRevenue, true)}
-              change={formatValue(metrics.salesGrowth, false, true)}
-              changeType={metrics.salesGrowth >= 0 ? 'positive' : 'negative'}
+              value={formatValue(metrics?.totalRevenue, true)}
+              change={formatValue(metrics?.salesGrowth, false, true)}
+              changeType={metrics?.salesGrowth && metrics.salesGrowth >= 0 ? 'positive' : 'negative'}
               icon={DollarSign}
-              loading={loading}
+              loading={isFetching}
             />
             <MetricCard
               title="Active Customers"
-              value={metrics.activeCustomers.toString()}
+              value={metrics?.activeCustomers?.toString() || '0'}
               change=""
               changeType="neutral"
               icon={Users}
-              loading={loading}
+              loading={isFetching}
             />
             <MetricCard
               title="Products Sold"
-              value={metrics.productsSold.toString()}
+              value={metrics?.productsSold?.toString() || '0'}
               change=""
               changeType="neutral"
               icon={Package}
-              loading={loading}
+              loading={isFetching}
             />
             <MetricCard
               title="Sales Growth"
-              value={formatValue(metrics.salesGrowth, false, true)}
-              changeType={metrics.salesGrowth >= 0 ? 'positive' : 'negative'}
+              value={formatValue(metrics?.salesGrowth, false, true)}
+              changeType={metrics?.salesGrowth && metrics.salesGrowth >= 0 ? 'positive' : 'negative'}
               icon={TrendingUp}
-              loading={loading}
+              loading={isFetching}
             />
           </div>
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <SalesChart salesDataOverTime={metrics.salesOverTime}/>
+            <SalesChart salesDataOverTime={metrics?.salesOverTime || []}/>
             <Card>
               <CardHeader>
                 <CardTitle className="text-base sm:text-lg">Top Products</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {loading ? (
+                  {isFetching ? (
                     Array(5).fill(0).map((_, i) => (
                       <div key={i} className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -228,7 +347,7 @@ export default function Dashboard() {
                       </div>
                     ))
                   ) : (
-                    metrics.topProducts.map((product) => (
+                    metrics?.topProducts?.map((product) => (
                       <div key={product.product.id} className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
@@ -245,7 +364,7 @@ export default function Dashboard() {
                           {formatValue(product.totalRevenue, true)}
                         </div>
                       </div>
-                    ))
+                    )) || []
                   )}
                 </div>
               </CardContent>
@@ -286,10 +405,6 @@ export default function Dashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-      <div>
-        {/* <SalesChart />
-        <RecentActivity /> */}
-      </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
