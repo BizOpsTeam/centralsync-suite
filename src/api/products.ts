@@ -1,16 +1,7 @@
 import axios from "axios";
-import { BASE_URL } from "./dashboard";
 import type { IProduct } from "@/types/Product";
 
-// ownerId,
-// categoryId,
-// minPrice,
-// maxPrice,
-// inStock,
-// search,
-// sort = "createdAt:desc",
-// page = 1,
-// limit = 20,
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export const getProducts = async(token: string, searchQuery: string, selectedCategory: string, page: number, limit: number): Promise<IProduct[]> => {
     if (!token) {

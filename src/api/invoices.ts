@@ -1,6 +1,7 @@
 import axios from "axios";
-import { BASE_URL } from "./dashboard";
 import type { IInvoicesResponse } from "@/types/Invoice";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export const getInvoices = async (
     token: string,

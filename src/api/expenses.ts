@@ -1,5 +1,4 @@
 import axios from "axios";
-import { BASE_URL } from "./dashboard";
 import type { 
     IExpense, 
     IExpensePayload, 
@@ -13,6 +12,8 @@ import type {
     IBudgetAnalyticsResponse,
     IExpenseCategory
 } from "@/types/Expense";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 // Expense API functions
 export const getExpenses = async (token: string, filters: IExpenseFilters = {}): Promise<IExpensesResponse> => {

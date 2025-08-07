@@ -1,6 +1,7 @@
 import axios from "axios";
-import { BASE_URL } from "./dashboard";
 import type { ISale, ISalePayload, ISalesResponse } from "@/types/Sale";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export const getSales = async (
     token: string, 

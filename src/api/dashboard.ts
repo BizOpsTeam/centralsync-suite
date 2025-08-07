@@ -1,7 +1,7 @@
 import type { IDashBoardMetrics } from '@/types/Product';
 import axios from 'axios';
 
-export const BASE_URL = 'http://localhost:4000';
+export const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export const fetchDashboardMetrics = async (accessToken: string): Promise<IDashBoardMetrics> => {
   try {
