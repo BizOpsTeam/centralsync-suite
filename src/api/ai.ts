@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Read base URL from Vite environment variables
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+export const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 // Types for AI responses
 export interface AIInsight {
     id: string;
