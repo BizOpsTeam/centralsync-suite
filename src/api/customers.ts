@@ -15,6 +15,42 @@ export interface CustomersResponse {
   totalPages: number; 
 }
 
+export interface CustomerDetails {
+    customer: Customer;
+    sales: any[];
+    invoices: any[];
+    customerGroups: any[];
+    campaigns: any[];
+    reminders: any[];
+    financialSummary: {
+        totalSpent: number;
+        averageOrderValue: number;
+        totalOrders: number;
+        lastOrderDate: string | null;
+        totalInvoices: number;
+        totalInvoiced: number;
+        paidInvoices: number;
+        totalPaid: number;
+        outstandingAmount: number;
+    };
+}
+
+export interface CustomerSalesResponse {
+    sales: any[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface CustomerInvoicesResponse {
+    invoices: any[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
 
 export const fetchCustomers = async (accessToken: string, page = 1, limit = 10, search = ''): Promise<CustomersResponse> => {
@@ -114,4 +150,72 @@ export const getCustomerStatement = async (accessToken: string, customerId: stri
     console.error('Error fetching customer statement:', error);
     throw error;
   }
+};
+
+export const fetchCustomerDetails = async (accessToken: string, customerId: string): Promise<CustomerDetails> => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/customers/${customerId}/details`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Error fetching customer details:', error);
+        throw error;
+    }
+};
+
+export const fetchCustomerSales = async (
+    accessToken: string, 
+    customerId: string, 
+    page = 1, 
+    limit = 10
+): Promise<CustomerSalesResponse> => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/customers/${customerId}/sales`, {
+            params: { page, limit },
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Error fetching customer sales:', error);
+        throw error;
+    }
+};
+
+export const fetchCustomerInvoices = async (
+    accessToken: string, 
+    customerId: string, 
+    page = 1, 
+    limit = 10
+): Promise<CustomerInvoicesResponse> => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/customers/${customerId}/invoices`, {
+            params: { page, limit },
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Error fetching customer invoices:', error);
+        throw error;
+    }
+};
+
+export const fetchCustomerCampaigns = async (accessToken: string, customerId: string): Promise<any[]> => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/customers/${customerId}/campaigns`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Error fetching customer campaigns:', error);
+        throw error;
+    }
 };

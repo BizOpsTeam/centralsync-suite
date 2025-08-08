@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 interface HeaderProps {
   onMobileMenuClick: () => void;
@@ -12,7 +13,7 @@ export function Header({ onMobileMenuClick }: HeaderProps) {
   const { user } = useAuth();
 
   return (
-    <header className="bg-white border-b border-border px-4 sm:px-6 py-4">
+    <header className="bg-white border-b border-border px-4 sm:px-6 py-4 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         {/* Mobile Menu Button */}
         <Button
@@ -26,13 +27,7 @@ export function Header({ onMobileMenuClick }: HeaderProps) {
 
         {/* Search */}
         <div className="flex-1 max-w-xl mx-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search customers, products, invoices..."
-              className="pl-10 bg-muted/50 border-0"
-            />
-          </div>
+          <GlobalSearch variant="minimal" />
         </div>
 
         {/* Actions */}

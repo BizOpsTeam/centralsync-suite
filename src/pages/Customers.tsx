@@ -11,6 +11,7 @@ import { fetchCustomers, type CustomerWithStats } from "@/api/customers";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from 'date-fns';
 import { AddCustomerDialog } from "@/components/customers/AddCustomerDialog";
+import { useNavigate } from 'react-router-dom';
 
 interface CustomerStatusBadgeProps {
   status: 'active' | 'inactive';
@@ -33,6 +34,7 @@ export default function Customers() {
   });
   const { accessToken } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Debounce search query to prevent excessive API calls
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -200,7 +202,12 @@ export default function Customers() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-foreground">{customer.name}</h3>
+                        <h3 
+                          className="font-medium text-foreground hover:text-primary cursor-pointer transition-colors"
+                          onClick={() => navigate(`/customers/${customer.id}`)}
+                        >
+                          {customer.name}
+                        </h3>
                         <CustomerStatusBadge status={'active'} />
                       </div>
                       <p className="text-sm text-muted-foreground">{customer.email}</p>
@@ -225,7 +232,12 @@ export default function Customers() {
                       </p>
                     </div>
                     <div className="flex items-center justify-end sm:justify-start space-x-2">
-                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full sm:w-auto"
+                        onClick={() => navigate(`/customers/${customer.id}`)}
+                      >
                         View
                       </Button>
                       <Button variant="outline" size="sm" className="w-full sm:w-auto">

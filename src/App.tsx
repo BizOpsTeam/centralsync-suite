@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
+import CustomerDetails from "./pages/CustomerDetails";
 import Products from "./pages/Products";
 import Sales from "./pages/Sales";
 import Campaigns from "./pages/Campaigns";
@@ -70,6 +71,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="customers" element={<Customers />} />
+            <Route path="customers/:id" element={<CustomerDetails />} />
             <Route path="products" element={<Products />} />
             <Route path="sales" element={<Sales />} />
             <Route path="campaigns" element={<Campaigns />} />
