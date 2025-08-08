@@ -1,4 +1,3 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard,
     Users,
@@ -6,7 +5,6 @@ import {
     ShoppingCart,
     Megaphone,
     Receipt,
-    BarChart3,
     Settings,
     ChevronLeft,
     ChevronRight,
@@ -17,6 +15,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -40,6 +40,7 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose }: SidebarProps) {
     const location = useLocation();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const handleNavigation = (href: string) => {
         navigate(href);
@@ -52,7 +53,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
     return (
         <div
             className={cn(
-                "bg-white border-r border-border transition-all duration-300 flex flex-col",
+                "bg-white border-r border-border transition-all duration-300 flex flex-col h-screen sticky top-0",
                 collapsed ? "w-16" : "w-64",
                 mobileOpen ? "w-64" : "",
                 mobileOpen ? "fixed inset-y-0 left-0 z-50" : ""
@@ -131,12 +132,12 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
             <div className="p-4 border-t border-border">
                 <div className={cn("flex items-center", (collapsed && !mobileOpen) ? "justify-center" : "space-x-3")}>
                     <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-primary">A</span>
+                        <span className="text-sm font-medium text-primary">{user?.name.charAt(0)}</span>
                     </div>
                     {(!collapsed || mobileOpen) && (
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">Admin User</p>
-                            <p className="text-xs text-muted-foreground truncate">admin@bizsuite.com</p>
+                            <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                         </div>
                     )}
                 </div>

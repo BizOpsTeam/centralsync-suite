@@ -102,6 +102,8 @@ export default function Dashboard() {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
+  console.log("metrics", metrics)
+
   // Handle error state
   React.useEffect(() => {
     if (isError && error) {
@@ -303,7 +305,7 @@ export default function Dashboard() {
             />
             <MetricCard
               title="Active Customers"
-              value={metrics?.activeCustomers?.toString() || '0'}
+              value={metrics?.activeCustomers.toString() || '0'}
               change=""
               changeType="neutral"
               icon={Users}
