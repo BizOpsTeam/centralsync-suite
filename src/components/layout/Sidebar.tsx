@@ -11,7 +11,8 @@ import {
     Building,
     FileText,
     Brain,
-    X
+    X,
+    CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ const navigation = [
     { name: "Customers", href: "/customers", icon: Users },
     { name: "Products", href: "/products", icon: Package },
     { name: "Sales", href: "/sales", icon: ShoppingCart },
+    { name: "Invoices", href: "/invoices", icon: CreditCard },
     { name: "Campaigns", href: "/campaigns", icon: Megaphone },
     { name: "Expenses", href: "/expenses", icon: Receipt },
     { name: "Reports", href: "/reports", icon: FileText },

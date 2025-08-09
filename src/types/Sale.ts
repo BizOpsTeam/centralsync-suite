@@ -1,8 +1,15 @@
 export interface ISaleItem {
+    id: string;
     productId: string;
     quantity: number;
+    price: number;
     discount?: number;
     tax?: number;
+    product: {
+        id: string;
+        name: string;
+        price: number;
+    };
 }
 
 export interface ISalePayload {
@@ -25,7 +32,7 @@ export interface ISale {
         email?: string;
         phone?: string;
     };
-    items: ISaleItem[];
+    saleItems: ISaleItem[];
     paymentMethod: string;
     channel?: string;
     notes?: string;

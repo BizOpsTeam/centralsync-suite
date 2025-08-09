@@ -80,7 +80,7 @@ export function useGlobalSearch(options: UseGlobalSearchOptions = {}) {
 
     // Quick search query
     const {
-        data: quickSearchData,
+        data: _quickSearchData,
         isLoading: isQuickSearchLoading,
     } = useQuery({
         queryKey: ['quickSearch', debouncedQuery],

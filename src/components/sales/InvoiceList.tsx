@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getInvoices } from "@/api/invoices";
+import { fetchInvoices, type Invoice } from "@/api/invoices";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import type { IInvoice } from "@/types/Invoice";
 import { CreditCard } from "lucide-react";
 
 export function InvoiceList() {
@@ -13,7 +12,7 @@ export function InvoiceList() {
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["invoices"],
-        queryFn: () => getInvoices(accessToken!, { page: 1, limit: 20 }),
+        queryFn: () => fetchInvoices(accessToken!, { page: 1, limit: 20 }),
         enabled: !!accessToken,
     });
 
@@ -27,7 +26,7 @@ export function InvoiceList() {
         );
     }
 
-    if (isError || !data?.data) {
+    if (isError || !data?.invoices) {
         return (
             <div className="text-center text-muted-foreground py-12">
                 {isError ? "Failed to load invoices." : "No invoices found."}
@@ -37,7 +36,7 @@ export function InvoiceList() {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {data.data.map((invoice: IInvoice) => (
+            {data.invoices.map((invoice: Invoice) => (
                 <Card key={invoice.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -84,11 +83,7 @@ export function InvoiceList() {
                                 {invoice.paidAmount.toFixed(2)}
                             </span>
                         </div>
-                        {invoice.sale?.notes && (
-                            <div className="text-xs italic text-muted-foreground mt-2">
-                                {invoice.sale.notes}
-                            </div>
-                        )}
+
                     </CardContent>
                 </Card>
             ))}

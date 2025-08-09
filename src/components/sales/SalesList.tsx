@@ -73,16 +73,16 @@ export function SalesList() {
                             </span>
                         </div>
                         <div className="text-xs text-muted-foreground mb-2">
-                            {sale.items && sale.items.length} item{sale.items && sale.items.length !== 1 && "s"}:
-                            {sale.items && (
+                            {sale.saleItems && sale.saleItems.length} item{sale.saleItems && sale.saleItems.length !== 1 && "s"}:
+                            {sale.saleItems && (
                                 <ul className="list-disc ml-4">
-                                    {sale.items.slice(0, 3).map((item, idx) => (
+                                    {sale.saleItems.slice(0, 3).map((item, idx) => (
                                         <li key={idx}>
-                                            {item.quantity} × {item.productId}
+                                            {item.quantity} × {item.product.name}
                                         </li>
                                     ))}
-                                    {sale.items.length > 3 && (
-                                        <li>...and {sale.items.length - 3} more</li>
+                                    {sale.saleItems.length > 3 && (
+                                        <li>...and {sale.saleItems.length - 3} more</li>
                                     )}
                                 </ul>
                             )}
