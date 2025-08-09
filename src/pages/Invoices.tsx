@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -9,7 +9,6 @@ import {
     Plus,
     DollarSign,
     CreditCard,
-    AlertTriangle,
     TrendingUp,
     FileText,
     Eye,
@@ -18,18 +17,20 @@ import {
 import { useDebounce } from '@/hooks/use-debounce';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
     fetchInvoices, 
     fetchInvoiceStats,
+    downloadInvoicePdf,
+    emailInvoicePdf,
     type Invoice,
-    type InvoiceStats,
     type InvoicesQueryParams
 } from "@/api/invoices";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from 'date-fns';
+import { toast } from '@/hooks/use-toast';
 
 interface InvoiceStatusBadgeProps {
     status: 'UNPAID' | 'PARTIAL' | 'PAID';
@@ -69,6 +70,8 @@ export default function Invoices() {
         page: 1,
         limit: 10,
     });
+    const [downloadingInvoices, setDownloadingInvoices] = useState<Set<string>>(new Set());
+    const [emailingInvoices, setEmailingInvoices] = useState<Set<string>>(new Set());
     const { accessToken } = useAuth();
     const navigate = useNavigate();
 
@@ -89,7 +92,7 @@ export default function Invoices() {
         isLoading,
         isError,
         refetch,
-        isFetching
+        isFetching: _isFetching,
     } = useQuery({
         queryKey: ['invoices', queryParams],
         queryFn: () => fetchInvoices(accessToken!, queryParams),
@@ -143,22 +146,91 @@ export default function Invoices() {
     }, [navigate]);
 
     const handleDownloadInvoice = useCallback(async (invoiceId: string) => {
+        if (!accessToken) return;
+        
+        setDownloadingInvoices(prev => new Set(prev).add(invoiceId));
         try {
-            // This would be implemented with the download function
-            console.log('Downloading invoice:', invoiceId);
+            const blob = await downloadInvoicePdf(accessToken, invoiceId);
+            
+            // Find the invoice to get the invoice number
+            const invoice = invoicesData?.invoices.find((inv: Invoice) => inv.id === invoiceId);
+            const filename = `invoice-${invoice?.invoiceNumber || invoiceId}.pdf`;
+            
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            toast({
+                title: 'Success',
+                description: 'Invoice PDF downloaded successfully!',
+            });
         } catch (error) {
             console.error('Error downloading invoice:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to download invoice PDF. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setDownloadingInvoices(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(invoiceId);
+                return newSet;
+            });
         }
-    }, []);
+    }, [accessToken, invoicesData?.invoices]);
 
     const handleEmailInvoice = useCallback(async (invoiceId: string) => {
+        if (!accessToken) return;
+        
+        setEmailingInvoices(prev => new Set(prev).add(invoiceId));
         try {
-            // This would be implemented with the email function
-            console.log('Emailing invoice:', invoiceId);
+            // Find the invoice to get customer details
+            const invoice = invoicesData?.invoices.find((inv: Invoice) => inv.id === invoiceId);
+            if (!invoice?.sale?.customer?.email) {
+                toast({
+                    title: 'Error',
+                    description: 'Customer email not found for this invoice.',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            const emailData = {
+                email: invoice.sale.customer.email,
+                subject: `Invoice #${invoice.invoiceNumber} from Your Company`,
+                message: `Dear ${invoice.sale.customer.name},\n\nPlease find attached your invoice #${invoice.invoiceNumber}.\n\nThank you for your business!\n\nBest regards,\nYour Company`
+            };
+
+            await emailInvoicePdf(accessToken, invoiceId, emailData);
+            
+            toast({
+                title: 'Success',
+                description: `Invoice emailed successfully to ${invoice.sale.customer.email}!`,
+            });
         } catch (error) {
             console.error('Error emailing invoice:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to email invoice. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setEmailingInvoices(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(invoiceId);
+                return newSet;
+            });
         }
-    }, []);
+    }, [accessToken, invoicesData?.invoices]);
 
     const invoices = invoicesData?.invoices || [];
     const total = invoicesData?.total || 0;
@@ -344,18 +416,28 @@ export default function Invoices() {
                                                     size="sm" 
                                                     className="w-full sm:w-auto"
                                                     onClick={() => handleDownloadInvoice(invoice.id)}
+                                                    disabled={downloadingInvoices.has(invoice.id)}
                                                 >
-                                                    <Download className="h-4 w-4 mr-2" />
-                                                    Download
+                                                    {downloadingInvoices.has(invoice.id) ? (
+                                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                    ) : (
+                                                        <Download className="h-4 w-4 mr-2" />
+                                                    )}
+                                                    {downloadingInvoices.has(invoice.id) ? 'Downloading...' : 'Download'}
                                                 </Button>
                                                 <Button 
                                                     variant="outline" 
                                                     size="sm" 
                                                     className="w-full sm:w-auto"
                                                     onClick={() => handleEmailInvoice(invoice.id)}
+                                                    disabled={emailingInvoices.has(invoice.id)}
                                                 >
-                                                    <Mail className="h-4 w-4 mr-2" />
-                                                    Email
+                                                    {emailingInvoices.has(invoice.id) ? (
+                                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                    ) : (
+                                                        <Mail className="h-4 w-4 mr-2" />
+                                                    )}
+                                                    {emailingInvoices.has(invoice.id) ? 'Sending...' : 'Email'}
                                                 </Button>
                                             </div>
                                         </div>
