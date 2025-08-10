@@ -283,6 +283,10 @@ export default function Reports() {
                                     <CardDescription className="text-sm sm:text-base">
                                         {format(new Date(dateRange.startDate), "MMM dd, yyyy")} -{" "}
                                         {format(new Date(dateRange.endDate), "MMM dd, yyyy")}
+                                        <br />
+                                        <span className="text-xs text-muted-foreground">
+                                            * Only approved expenses are included in calculations
+                                        </span>
                                     </CardDescription>
                                 </div>
                                 <Button
@@ -343,8 +347,8 @@ export default function Reports() {
                                             <span className="font-medium">{profitLoss?.breakdown?.saleItemsCount || 0}</span>
                                         </div>
                                         <div className="flex justify-between sm:justify-center">
-                                            <span className="text-muted-foreground">Total Expenses:</span>
-                                            <span className="font-medium">{profitLoss?.breakdown?.expenseCount || 0}</span>
+                                            <span className="text-muted-foreground">Approved Expenses:</span>
+                                            <span className="font-medium">{profitLoss?.breakdown?.approvedExpenseCount || 0}</span>
                                         </div>
                                     </div>
                                 </div>

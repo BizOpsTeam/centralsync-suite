@@ -13,6 +13,7 @@ export interface ProfitLossData {
     salesCount: number;
     saleItemsCount: number;
     expenseCount: number;
+    approvedExpenseCount: number; // Only approved expenses are included in calculations
   };
 }
 
