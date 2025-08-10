@@ -1,6 +1,5 @@
-import { Bell, Search, Plus, Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -33,11 +32,6 @@ export function Header({ onMobileMenuClick }: HeaderProps) {
         {/* Actions */}
         {user ? (
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button size="sm" className="bg-primary hover:bg-primary/90 hidden sm:flex">
-              <Plus className="h-4 w-4 mr-2" />
-              Quick Sale
-            </Button>
-            
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-4 w-4 bg-danger text-xs text-white rounded-full flex items-center justify-center">
