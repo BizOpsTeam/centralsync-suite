@@ -19,6 +19,7 @@ import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import AIInsights from "./pages/AIInsights";
+import FinancialStatements from "./pages/FinancialStatements";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import NotFound from "./pages/NotFound";
@@ -82,6 +83,7 @@ const AppRoutes = () => {
             <Route path="expenses" element={<Expenses />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="financial-statements" element={<FinancialStatements />} />
             <Route path="ai" element={<AIInsights />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
