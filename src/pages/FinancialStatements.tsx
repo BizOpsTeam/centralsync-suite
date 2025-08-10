@@ -94,22 +94,6 @@ export default function FinancialStatements() {
         retry: 1,
     });
 
-    console.log("balanceSheet", balanceSheet);
-    console.log("isLoadingBS", isLoadingBS);
-    console.log("isLoadingCF", isLoadingCF);
-    console.log("isLoadingPL", isLoadingPL);
-    console.log("isLoadingSummary", isLoadingSummary);
-    console.log("profitLoss", profitLoss);
-    console.log("cashFlow", cashFlow);
-    console.log("summary", summary);
-    console.log("errorPL", errorPL);
-    console.log("errorCF", errorCF);
-    console.log("errorBS", errorBS);
-    console.log("accessToken", accessToken);
-    console.log("API_BASE_URL", import.meta.env.VITE_BASE_URL);
-    console.log("dateRange", dateRange);
-    
-
     // Loan application package mutation
     const loanPackageMutation = useMutation({
         mutationFn: (periods: Array<{ startDate: string; endDate: string; periodType: 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | 'CUSTOM' }>) =>
@@ -495,6 +479,10 @@ export default function FinancialStatements() {
                                 </div>
                             ) : profitLoss ? (
                                 <ProfitLossDisplay data={profitLoss} />
+                            ) : errorPL ? (
+                                <div className="text-center text-muted-foreground py-8">
+                                    Error loading profit & loss
+                                </div>
                             ) : (
                                 <div className="text-center text-muted-foreground py-8">
                                     No data available for the selected period
@@ -551,6 +539,10 @@ export default function FinancialStatements() {
                                 </div>
                             ) : cashFlow ? (
                                 <CashFlowDisplay data={cashFlow} />
+                            ) : errorCF ? (
+                                <div className="text-center text-muted-foreground py-8">
+                                    Error loading cash flow
+                                </div>
                             ) : (
                                 <div className="text-center text-muted-foreground py-8">
                                     No data available for the selected period
@@ -607,6 +599,10 @@ export default function FinancialStatements() {
                                 </div>
                             ) : balanceSheet ? (
                                 <BalanceSheetDisplay data={balanceSheet} />
+                            ) : errorBS ? (
+                                <div className="text-center text-muted-foreground py-8">
+                                    Error loading balance sheet
+                                </div>
                             ) : (
                                 <div className="text-center text-muted-foreground py-8">
                                     No data available for the selected date
