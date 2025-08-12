@@ -118,6 +118,7 @@ export function NewSaleModal({ open, onOpenChange }: NewSaleModalProps) {
             toast.success("Sale created successfully!");
             queryClient.invalidateQueries({ queryKey: ["sales"] });
             queryClient.invalidateQueries({ queryKey: ["products"] });
+            queryClient.invalidateQueries({ queryKey: ["todaySales"] });
             onOpenChange(false);
             form.reset();
             setCart([]);

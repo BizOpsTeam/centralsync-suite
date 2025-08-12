@@ -262,10 +262,6 @@ export default function Invoices() {
                         Manage and track your business invoices
                     </p>
                 </div>
-                <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Invoice
-                </Button>
             </div>
 
             {/* Stats Cards */}

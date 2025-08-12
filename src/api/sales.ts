@@ -7,7 +7,9 @@ export const getSales = async (
     token: string, 
     searchQuery: string = "", 
     page: number = 1, 
-    limit: number = 20
+    limit: number = 20,
+    startDate: string = "",
+    endDate: string = ""
 ): Promise<ISalesResponse> => {
     if (!token) {
         throw new Error("No token provided");
@@ -18,6 +20,8 @@ export const getSales = async (
             search: searchQuery,
             page,
             limit,
+            startDate,
+            endDate
         },
         headers: {
             "Authorization": `Bearer ${token}`
@@ -67,3 +71,31 @@ export const deleteSale = async (token: string, saleId: string) => {
         }
     });
 }; 
+
+export const getTodaySalesCount = async (token: string) => {
+    if (!token) {
+        throw new Error("No token provided");
+    }
+    
+    const response = await axios.get(`${BASE_URL}/sales/today-sales`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    return response.data.data;
+};
+
+export const getThisMonthSalesCount = async (token: string) => {
+    if (!token) {
+        throw new Error("No token provided");
+    }
+    
+    const response = await axios.get(`${BASE_URL}/sales/this-month-sales`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    return response.data.data;
+};
