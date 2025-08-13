@@ -286,12 +286,12 @@ export default function Dashboard() {
       </div>
       
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
+        {/* <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics" disabled>
             Analytics
           </TabsTrigger>
-        </TabsList>
+        </TabsList> */}
         
         <TabsContent value="overview" className="space-y-4">
           {/* Stats Grid */}
