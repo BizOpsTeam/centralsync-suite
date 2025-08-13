@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { CreditCard } from "lucide-react";
 import type { ISale } from "@/types/Sale";
+import { oneDay } from "@/lib/cacheTimes";
 
 export function SalesList() {
     const { accessToken } = useAuth();
@@ -15,6 +16,11 @@ export function SalesList() {
         queryKey: ["sales"],
         queryFn: () => getSales(accessToken!, "", 1, 20),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     console.log(data);
