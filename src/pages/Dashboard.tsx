@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SalesChart } from '@/components/dashboard/SalesChart';
 import { useNavigate } from 'react-router-dom';
+import { oneDay } from '@/lib/cacheTimes';
 
 const MetricCard = ({ 
   title, 
@@ -94,8 +95,8 @@ export default function Dashboard() {
     queryKey: ['dashboard', 'metrics'],
     queryFn: () => fetchDashboardMetrics(accessToken!),
     enabled: !!accessToken,
-    staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache for 10 minutes
+    staleTime: oneDay, // 1 day - data is fresh for 1 day
+    gcTime: oneDay, // 1 day - keep in cache for 1 day
     refetchOnWindowFocus: false, // Don't refetch when window regains focus
     refetchOnMount: false, // Don't refetch on component mount if data is fresh
     retry: 2, // Retry failed requests 2 times
@@ -123,7 +124,7 @@ export default function Dashboard() {
     const interval = setInterval(() => {
       // Only refetch if the data is stale
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'metrics'] });
-    }, 5 * 60 * 1000); // 5 minutes
+    }, oneDay); // 1 day
 
     return () => clearInterval(interval);
   }, [accessToken, queryClient]);

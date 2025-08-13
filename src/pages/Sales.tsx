@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SalesList } from "@/components/sales/SalesList";
 import { InvoiceList } from "@/components/sales/InvoiceList";
-import { QuotesList } from "@/components/sales/QuotesList";
 import { NewSaleModal } from "@/components/sales/NewSaleModal";
 import { QuickSaleModal } from "@/components/sales/QuickSaleModal";
-import { Plus, Receipt, FileText, Calculator, Zap } from "lucide-react";
+import { Plus, Receipt } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getThisMonthSalesCount, getTodaySalesCount } from "@/api/sales";
 import { useAuth } from "@/contexts/AuthContext";
+import { oneDay } from "@/lib/cacheTimes";
 
 export default function Sales() {
     const [activeTab, setActiveTab] = useState("sales");
@@ -21,13 +21,23 @@ export default function Sales() {
     //getTodaySales
     const { data: todaySales, isLoading: isTodaySalesLoading } = useQuery({
         queryKey: ["todaySales"],
-        queryFn: () => getTodaySalesCount(accessToken!)
+        queryFn: () => getTodaySalesCount(accessToken!),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     //getThisMonthSales
     const { data: thisMonthSales, isLoading: isThisMonthSalesLoading } = useQuery({
         queryKey: ["thisMonthSales"],
-        queryFn: () => getThisMonthSalesCount(accessToken!)
+        queryFn: () => getThisMonthSalesCount(accessToken!),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
 

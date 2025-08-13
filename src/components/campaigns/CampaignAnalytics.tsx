@@ -10,6 +10,7 @@ import { Mail, MessageSquare, TrendingUp, TrendingDown, Users, Target } from "lu
 import { getCampaigns } from "@/api/campaigns";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ICampaign } from "@/types/Campaign";
+import { oneDay } from "@/lib/cacheTimes";
 
 const overviewData = [
     { name: "Jan", emails: 2400, sms: 890 },
@@ -41,6 +42,11 @@ export function CampaignAnalytics() {
         queryKey: ["campaigns"],
         queryFn: () => getCampaigns(accessToken!),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const campaigns = campaignsResponse?.data || [];
@@ -216,7 +222,7 @@ export function CampaignAnalytics() {
                                             cx="50%"
                                             cy="50%"
                                             labelLine={false}
-                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                            label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                                             outerRadius={80}
                                             fill="#8884d8"
                                             dataKey="value"

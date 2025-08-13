@@ -35,6 +35,7 @@ import {
 } from '@/api/customers';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
+import { oneDay } from '@/lib/cacheTimes';
 
 export default function CustomerDetails() {
     const { id } = useParams<{ id: string }>();
@@ -52,8 +53,11 @@ export default function CustomerDetails() {
         queryKey: ['customerDetails', id],
         queryFn: () => fetchCustomerDetails(accessToken!, id!),
         enabled: !!accessToken && !!id,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch customer sales
@@ -64,8 +68,11 @@ export default function CustomerDetails() {
         queryKey: ['customerSales', id],
         queryFn: () => fetchCustomerSales(accessToken!, id!),
         enabled: !!accessToken && !!id,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        gcTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch customer invoices
@@ -76,8 +83,11 @@ export default function CustomerDetails() {
         queryKey: ['customerInvoices', id],
         queryFn: () => fetchCustomerInvoices(accessToken!, id!),
         enabled: !!accessToken && !!id,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        gcTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch customer campaigns
@@ -88,8 +98,11 @@ export default function CustomerDetails() {
         queryKey: ['customerCampaigns', id],
         queryFn: () => fetchCustomerCampaigns(accessToken!, id!),
         enabled: !!accessToken && !!id,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     if (isErrorDetails) {

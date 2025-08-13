@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { searchAPI, type SearchResult } from '../api/search';
 import { useAuth } from '@/contexts/AuthContext';
+import { oneDay } from '@/lib/cacheTimes';
 
 interface UseGlobalSearchOptions {
     debounceMs?: number;
@@ -62,8 +63,11 @@ export function useGlobalSearch(options: UseGlobalSearchOptions = {}) {
         queryKey: ['globalSearch', debouncedQuery],
         queryFn: () => searchAPI.globalSearch(debouncedQuery, {}, accessToken!),
         enabled: !!debouncedQuery && !!accessToken && debouncedQuery.length >= minQueryLength,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Suggestions query
@@ -74,8 +78,11 @@ export function useGlobalSearch(options: UseGlobalSearchOptions = {}) {
         queryKey: ['searchSuggestions', debouncedQuery],
         queryFn: () => searchAPI.getSuggestions(debouncedQuery, accessToken!),
         enabled: !!debouncedQuery && !!accessToken && enableSuggestions && debouncedQuery.length >= 1,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        gcTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Quick search query
@@ -86,8 +93,11 @@ export function useGlobalSearch(options: UseGlobalSearchOptions = {}) {
         queryKey: ['quickSearch', debouncedQuery],
         queryFn: () => searchAPI.quickSearch(debouncedQuery, accessToken!),
         enabled: !!debouncedQuery && !!accessToken && enableQuickSearch && debouncedQuery.length >= minQueryLength,
-        staleTime: 1 * 60 * 1000, // 1 minute
-        gcTime: 2 * 60 * 1000, // 2 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Update results when data changes

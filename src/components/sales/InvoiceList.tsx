@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { CreditCard } from "lucide-react";
+import { oneDay } from "@/lib/cacheTimes";
 
 export function InvoiceList() {
     const { accessToken } = useAuth();
@@ -14,6 +15,11 @@ export function InvoiceList() {
         queryKey: ["invoices"],
         queryFn: () => fetchInvoices(accessToken!, { page: 1, limit: 20 }),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     if (isLoading) {

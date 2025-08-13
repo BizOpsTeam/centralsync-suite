@@ -54,6 +54,7 @@ import {
   SAMPLE_QUERIES,
   type AIInsight,
 } from "@/api/ai";
+import { oneDay } from '@/lib/cacheTimes';
 
 // Extended AIInsight interface to include content field
 interface ExtendedAIInsight extends AIInsight {
@@ -582,24 +583,44 @@ export default function AIInsights() {
     queryKey: ["aiDashboard"],
     queryFn: () => getAIDashboard(accessToken || ""),
     enabled: !!accessToken,
+    staleTime: oneDay, // 1 day - data is fresh for 1 day
+    gcTime: oneDay, // 1 day - keep in cache for 1 day
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch on component mount if data is fresh
+    retry: 2, // Retry failed requests 2 times
   });
 
   const { data: insights, isLoading: insightsLoading } = useQuery({
     queryKey: ["aiInsights"],
     queryFn: () => generateInsights(accessToken || ""),
     enabled: !!accessToken,
+    staleTime: oneDay, // 1 day - data is fresh for 1 day
+    gcTime: oneDay, // 1 day - keep in cache for 1 day
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch on component mount if data is fresh
+    retry: 2, // Retry failed requests 2 times
   });
 
   const { data: predictions, isLoading: predictionsLoading } = useQuery({
     queryKey: ["aiPredictions"],
     queryFn: () => predictTrends(accessToken || "", "30"),
     enabled: !!accessToken,
+    staleTime: oneDay, // 1 day - data is fresh for 1 day
+    gcTime: oneDay, // 1 day - keep in cache for 1 day
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch on component mount if data is fresh
+    retry: 2, // Retry failed requests 2 times
   });
 
   const { data: recommendations, isLoading: recommendationsLoading } = useQuery({
     queryKey: ["aiRecommendations"],
     queryFn: () => generateRecommendations(accessToken || ""),
     enabled: !!accessToken,
+    staleTime: oneDay, // 1 day - data is fresh for 1 day
+    gcTime: oneDay, // 1 day - keep in cache for 1 day
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch on component mount if data is fresh
+    retry: 2, // Retry failed requests 2 times
   });
 
   // Mutations

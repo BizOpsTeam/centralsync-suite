@@ -68,6 +68,7 @@ import {
 } from "@/api/reports";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { oneDay } from "@/lib/cacheTimes";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
@@ -86,62 +87,122 @@ export default function Reports() {
         queryKey: ["profitLoss", dateRange],
         queryFn: () => getProfitLoss(accessToken!, dateRange.startDate, dateRange.endDate),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: revenueForecast, isLoading: forecastLoading } = useQuery({
         queryKey: ["revenueForecast", period],
         queryFn: () => getRevenueForecast(accessToken!, period, 3, dateRange.startDate, dateRange.endDate),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: topProducts, isLoading: productsLoading } = useQuery({
         queryKey: ["topProducts", period],
         queryFn: () => getTopProducts(accessToken!, 10, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: salesOverTime, isLoading: salesLoading } = useQuery({
         queryKey: ["salesOverTime", period],
         queryFn: () => getSalesOverTime(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: salesByChannel, isLoading: channelLoading } = useQuery({
         queryKey: ["salesByChannel", period],
         queryFn: () => getSalesByChannel(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: averageOrder, isLoading: orderLoading } = useQuery({
         queryKey: ["averageOrder", period],
         queryFn: () => getAverageOrderValue(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: discountImpact, isLoading: discountLoading } = useQuery({
         queryKey: ["discountImpact", period],
         queryFn: () => getDiscountImpact(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: stockouts, isLoading: stockoutsLoading } = useQuery({
         queryKey: ["stockouts", period],
         queryFn: () => getStockouts(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: slowMoving, isLoading: slowMovingLoading } = useQuery({
         queryKey: ["slowMoving", period],
         queryFn: () => getSlowMovingInventory(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: salesForecast, isLoading: forecastSalesLoading } = useQuery({
         queryKey: ["salesForecast", period],
         queryFn: () => getSalesForecast(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: expenseAnalytics, isLoading: expenseLoading } = useQuery({
         queryKey: ["expenseAnalytics", period],
         queryFn: () => getExpenseAnalytics(accessToken!, period),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const { data: budgetAnalytics, isLoading: budgetLoading } = useQuery({
         queryKey: ["budgetAnalytics"],
         queryFn: () => getBudgetAnalytics(accessToken!),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     const handleDownloadReport = async (reportType: string) => {

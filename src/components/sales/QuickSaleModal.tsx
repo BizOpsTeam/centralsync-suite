@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { X, Plus, Minus, Trash2, Search, Zap } from "lucide-react";
+import { Plus, Minus, Trash2, Search, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,8 +81,8 @@ export function QuickSaleModal({ open, onOpenChange }: QuickSaleModalProps) {
     });
 
     const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        // product.code?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const addToCart = (product: IProduct) => {
@@ -182,7 +182,7 @@ export function QuickSaleModal({ open, onOpenChange }: QuickSaleModalProps) {
                                                     <div>
                                                         <h3 className="font-medium text-sm">{product.name}</h3>
                                                         <p className="text-xs text-muted-foreground">
-                                                            SKU: {product.sku} • Stock: {product.stock}
+                                                            Stock: {product.stock}
                                                         </p>
                                                     </div>
                                                     <Badge variant="secondary">

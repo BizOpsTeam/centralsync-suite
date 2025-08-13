@@ -45,6 +45,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
+import { oneDay } from '@/lib/cacheTimes';
 
 
 interface InvoiceStatusBadgeProps {
@@ -96,8 +97,11 @@ export default function InvoiceDetails() {
         queryKey: ['invoice', id],
         queryFn: () => fetchInvoiceById(accessToken!, id!),
         enabled: !!accessToken && !!id,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     if (isErrorInvoice) {

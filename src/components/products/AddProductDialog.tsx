@@ -37,6 +37,7 @@ import {
 import { fetchProductCategories } from "@/api/productCategories";
 import { useQuery } from "@tanstack/react-query";
 import type { TCategory } from "@/types/Product";
+import { oneDay } from "@/lib/cacheTimes";
 
 
 const productSchema = z.object({
@@ -75,8 +76,10 @@ export function AddProductDialog({
         queryKey: ['product-categories'],
         queryFn: () => fetchProductCategories(accessToken!),
         retry: 1,
-        refetchOnWindowFocus: false,
-        staleTime: 24 * 60 * 60 * 1000, // 24 hours
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
     })
 
     const form = useForm<ProductFormData>({

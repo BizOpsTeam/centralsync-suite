@@ -29,6 +29,7 @@ import {
     type CashFlowStatement,
     type BalanceSheet,
 } from '@/api/financialStatements';
+import { oneDay } from '@/lib/cacheTimes';
 
 export default function FinancialStatements() {
     const { accessToken } = useAuth();
@@ -49,7 +50,11 @@ export default function FinancialStatements() {
         queryKey: ['financialSummary'],
         queryFn: () => getFinancialSummary(accessToken!),
         enabled: !!accessToken,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch Profit & Loss Statement
@@ -62,8 +67,11 @@ export default function FinancialStatements() {
         queryKey: ['profitLoss', dateRange.startDate, dateRange.endDate, periodType],
         queryFn: () => generateProfitLossStatement(accessToken!, dateRange.startDate, dateRange.endDate, periodType),
         enabled: !!accessToken,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        retry: 1,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch Cash Flow Statement
@@ -76,8 +84,11 @@ export default function FinancialStatements() {
         queryKey: ['cashFlow', dateRange.startDate, dateRange.endDate, periodType],
         queryFn: () => generateCashFlowStatement(accessToken!, dateRange.startDate, dateRange.endDate, periodType),
         enabled: !!accessToken,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        retry: 1,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Fetch Balance Sheet
@@ -90,8 +101,11 @@ export default function FinancialStatements() {
         queryKey: ['balanceSheet', balanceSheetDate],
         queryFn: () => generateBalanceSheet(accessToken!, balanceSheetDate),
         enabled: !!accessToken,
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        retry: 1,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Loan application package mutation

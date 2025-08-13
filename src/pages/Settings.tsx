@@ -42,6 +42,7 @@ import {
 } from "@/api/settings";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { oneDay } from "@/lib/cacheTimes";
 
 export default function Settings() {
     const { toast } = useToast();
@@ -69,6 +70,11 @@ export default function Settings() {
         queryKey: ["userProfile"],
         queryFn: () => getUserProfile(accessToken!),
         enabled: !!accessToken,
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     // Mutations
