@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Search, Filter, Download, Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from '@/hooks/use-debounce';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
