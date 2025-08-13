@@ -75,10 +75,10 @@ export default function Sales() {
 
             {/* Main Content */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="sales" className="text-xs sm:text-sm">Sales</TabsTrigger>
                     <TabsTrigger value="invoices" className="text-xs sm:text-sm">Invoices</TabsTrigger>
-                    <TabsTrigger value="quotes" className="text-xs sm:text-sm">Quotes</TabsTrigger>
+                    {/* <TabsTrigger value="quotes" className="text-xs sm:text-sm">Quotes</TabsTrigger> */}
                 </TabsList>
 
                 <TabsContent value="sales" className="space-y-4">
@@ -89,9 +89,9 @@ export default function Sales() {
                     <InvoiceList />
                 </TabsContent>
 
-                <TabsContent value="quotes" className="space-y-4">
+                {/* <TabsContent value="quotes" className="space-y-4">
                     <QuotesList />
-                </TabsContent>
+                </TabsContent> */}
             </Tabs>
 
             {/* New Sale Modal */}

@@ -119,10 +119,10 @@ export default function Customers() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <Button variant="outline" className="w-full sm:w-auto">
+          {/* <Button variant="outline" className="w-full sm:w-auto">
             <Download className="mr-2 h-4 w-4" />
             Export
-          </Button>
+          </Button> */}
           <AddCustomerDialog onCustomerAdded={handleCustomerAdded} />
         </div>
       </div>
@@ -142,10 +142,10 @@ export default function Customers() {
           <Search className="mr-2 h-4 w-4" />
           Search
         </Button>
-        <Button type="button" variant="outline" className="w-full sm:w-auto">
+        {/* <Button type="button" variant="outline" className="w-full sm:w-auto">
           <Filter className="mr-2 h-4 w-4" />
           Filter
-        </Button>
+        </Button> */}
       </form>
 
       {/* Customer List */}
