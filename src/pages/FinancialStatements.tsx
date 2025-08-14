@@ -238,15 +238,15 @@ export default function FinancialStatements() {
     };
 
     // Handle loan application package generation
-    const handleGenerateLoanPackage = () => {
-        const currentYear = getCurrentYearPeriod();
-        const previousYear = getPreviousYearPeriod();
+    // const handleGenerateLoanPackage = () => {
+    //     const currentYear = getCurrentYearPeriod();
+    //     const previousYear = getPreviousYearPeriod();
         
-        loanPackageMutation.mutate([
-            { ...currentYear, periodType: 'YEARLY' },
-            { ...previousYear, periodType: 'YEARLY' },
-        ]);
-    };
+    //     loanPackageMutation.mutate([
+    //         { ...currentYear, periodType: 'YEARLY' },
+    //         { ...previousYear, periodType: 'YEARLY' },
+    //     ]);
+    // };
 
     return (
         <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
@@ -258,7 +258,7 @@ export default function FinancialStatements() {
                         Generate professional financial reports for business analysis and loan applications
                     </p>
                 </div>
-                <Button 
+                {/* <Button 
                     onClick={handleGenerateLoanPackage}
                     disabled={loanPackageMutation.isPending}
                     className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
@@ -271,7 +271,7 @@ export default function FinancialStatements() {
                     )}
                     <span className="hidden sm:inline">Generate Loan Package</span>
                     <span className="sm:hidden">Loan Package</span>
-                </Button>
+                </Button> */}
             </div>
 
             {/* Financial Summary Cards */}
