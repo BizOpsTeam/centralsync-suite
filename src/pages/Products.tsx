@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Search, Plus, Download, Grid, List, Package } from "lucide-react";
+import { Search, Plus, Grid, List, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { getProducts } from "@/api/products";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { oneDay } from "@/lib/cacheTimes";
 
 
 export default function Products() {
@@ -35,6 +36,11 @@ export default function Products() {
     const { data: products, isLoading: isLoadingProducts, error: productsError } = useQuery({
         queryKey: ['products'],
         queryFn: () => getProducts(accessToken!, searchQuery, selectedCategory, 1, 20),
+        staleTime: oneDay, // 1 day - data is fresh for 1 day
+        gcTime: oneDay, // 1 day - keep in cache for 1 day
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data is fresh
+        retry: 2, // Retry failed requests 2 times
     });
 
     //revalidate search when any of the query params changes
@@ -184,10 +190,10 @@ export default function Products() {
                                 </Button>
                             </div>
 
-                            <Button variant="outline" size="sm">
+                            {/* <Button variant="outline" size="sm">
                                 <Download className="h-4 w-4 mr-2" />
                                 <span className="hidden sm:inline">Export</span>
-                            </Button>
+                            </Button> */}
                         </div>
                     </div>
 
