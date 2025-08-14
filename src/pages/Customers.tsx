@@ -221,15 +221,15 @@ export default function Customers() {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
                     <div className="text-right sm:text-left">
-                      <p className="text-sm font-medium">{customer.totalOrders} orders</p>
-                      <p className="text-sm text-muted-foreground">
+                      {/* <p className="text-sm font-medium">{customer.totalOrders} orders</p> */}
+                      {/* <p className="text-sm text-muted-foreground">
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
-                          currency: 'USD',
+                          currency: 'GHC',
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }).format(customer.totalSpent || 0)} spent
-                      </p>
+                      </p> */}
                     </div>
                     <div className="flex items-center justify-end sm:justify-start space-x-2">
                       <Button 

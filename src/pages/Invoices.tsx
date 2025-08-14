@@ -6,7 +6,7 @@ import {
     Filter, 
     Download, 
     Loader2, 
-    Plus,
+    // Plus,
     DollarSign,
     CreditCard,
     TrendingUp,
@@ -390,12 +390,12 @@ export default function Invoices() {
                                         </div>
                                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
                                             <div className="text-right sm:text-left">
-                                                <p className="text-sm font-medium">
+                                                {/* <p className="text-sm font-medium">
                                                     ${invoice.amountDue.toFixed(2)}
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {invoice.isPaid ? 'Paid' : 'Due'}
-                                                </p>
+                                                </p> */}
                                             </div>
                                             <div className="flex items-center justify-end sm:justify-start space-x-2">
                                                 <Button 
